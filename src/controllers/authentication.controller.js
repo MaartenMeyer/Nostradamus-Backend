@@ -22,7 +22,7 @@ module.exports = {
       assert.equal(typeof user.lastName, "string", "lastName is required.");
       assert(dateValidator.test(user.dateOfBirth), "A valid dateOfBirth is required.");
       assert(emailValidator.test(user.emailAddress), "A valid mailAddress is required.");
-      assert(passwordValidator.test(user.password), "A valid password is required.");
+      //assert(passwordValidator.test(user.password), "A valid password is required.");
       assert.equal(typeof user.accountType, "number", "A valid accountType is required.");
       assest.equal(typeof user.userNumber, "number", "A valid userNumber is required.");
 
@@ -32,7 +32,7 @@ module.exports = {
         `INSERT INTO user (firstName, lastName, dateOfBirth, emailAddress, password, accountType)` +
         `VALUES ('${user.firstName}', '${user.lastName}', ` +
         `'${user.dateOfBirth}','${user.emailAddress}', '${hash}','${user.accountType}')` +
-        `; SELECT SCOPE_IDENTITY() AS UserId`;
+        `; SELECT SCOPE_IDENTITY() AS UserId AND userNumber`;
 
       database.executeQuery(query, (err, rows) => {
         if (err) {
