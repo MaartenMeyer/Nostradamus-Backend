@@ -7,10 +7,10 @@ const bcrypt        = require("bcryptjs");
 
 saltRounds = 10;
 
-const postalCodeValidator = new RegExp("^[1-9][0-9]{3} ?(?!sa|sd|ss)[a-zA-Z]{2}$");
-const phoneValidator      = new RegExp("^06(| |-)[0-9]{8}$");
-const mailValidator       = new RegExp('^(([^<>()\\[\\]\\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
+//Regex om te checken
+const emailValidator      = new RegExp('^(([^<>()\\[\\]\\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
 const passwordValidator   = new RegExp("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$");
+const dateValidator       = new RegExp('([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))')
 
 module.exports = {
   registerUser: (req, res, next) => {
@@ -20,11 +20,11 @@ module.exports = {
     try {
       assert.equal(typeof user.firstName, "string", "firstName is required.");
       assert.equal(typeof user.lastName, "string", "lastName is required.");
-      assert.equal(typeof user.dateOfBirth, "string", "dateOfBirth is required.");
-      assert.equal(typeof user.accountType, "integer", "A valid accountType is required.");
-      assest.equal(typeof user.userNumber, "integer", "A valid userNumber is required.");
-      assert(mailValidator.test(user.emailAddress), "A valid mailAddress is required.");
+      assert(dateValidator.test(dateOfBirth), "A valid dateOfBirth is required.");
+      assert(emailValidator.test(user.emailAddress), "A valid mailAddress is required.");
       assert(passwordValidator.test(user.password), "A valid password is required.");
+      assert.equal(typeof user.accountType, "number", "A valid accountType is required.");
+      assest.equal(typeof user.userNumber, "number", "A valid userNumber is required.");
 
       const hash = bcrypt.hashSync(req.body.password, saltRounds);
 
