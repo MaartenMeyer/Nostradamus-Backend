@@ -9,17 +9,17 @@ let database = mysql.createConnection({
   password: process.env.DB_PASSWORD,
   databasename: 'nostradamus',
   insecureAuth: true
-})
+});
 
 
 database.connect( (error) => {
-  console.log('connectiong pending...')
+  console.log('connectiong pending...');
   if (error){
-    console.log(error)
+    console.log(error);
     return
   } else {
     console.log('Connected with database')
   }
-})
+});
 
-module.exports = database
+module.exports = database;
