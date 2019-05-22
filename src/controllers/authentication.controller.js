@@ -9,7 +9,7 @@ saltRounds = 10;
 
 const postalCodeValidator = new RegExp("^[1-9][0-9]{3} ?(?!sa|sd|ss)[a-zA-Z]{2}$");
 const phoneValidator      = new RegExp("^06(| |-)[0-9]{8}$");
-const mailValidator       = new RegExp('^(([^<>()\\[\\]\\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
+const emailValidator       = new RegExp('^(([^<>()\\[\\]\\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
 const passwordValidator   = new RegExp("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$");
 
 module.exports = {
@@ -21,17 +21,20 @@ module.exports = {
       assert.equal(typeof user.firstName, "string", "firstName is required.");
       assert.equal(typeof user.lastName, "string", "lastName is required.");
       assert.equal(typeof user.dateOfBirth, "string", "dateOfBirth is required.");
+      assert.equal(typeof user.emailAddress, "string", "emailAddress is required");
+      assert.equal(typeof user.password, "string", "password is required");
       assert.equal(typeof user.accountType, "integer", "A valid accountType is required.");
       assest.equal(typeof user.userNumber, "integer", "A valid userNumber is required.");
-      assert(mailValidator.test(user.emailAddress), "A valid mailAddress is required.");
+
+      assert(emailValidator.test(user.emailAddress), "A valid mailAddress is required.");
       assert(passwordValidator.test(user.password), "A valid password is required.");
 
       const hash = bcrypt.hashSync(req.body.password, saltRounds);
 
       const query =
-        `INSERT INTO user (firstName, lastName, dateOfBirth, emailAddress, password, accountType)` +
+        `INSERT INTO user (firstName, lastName, dateOfBirth, emailAddress, password, accountType, userNumber)` +
         `VALUES ('${user.firstName}', '${user.lastName}', ` +
-        `'${user.dateOfBirth}','${user.emailAddress}', '${hash}','${user.accountType}')` +
+        `'${user.dateOfBirth}', '${user.emailAddress}', '${user.password}', '${user.accountType}', '${user.userNumber}')` +
         `; SELECT SCOPE_IDENTITY() AS UserId`;
 
       database.executeQuery(query, (err, rows) => {
@@ -60,7 +63,7 @@ module.exports = {
     logger.info("loginUser called");
     const user = req.body;
 
-    const query = `SELECT Password, UserId FROM [DBUser] WHERE EmailAddress='${user.emailAddress}'`;
+    const query = `SELECT Password, UserId FROM user WHERE EmailAddress='${user.emailAddress}'`;
 
     database.executeQuery(query, (err, rows) => {
       if (err) {
