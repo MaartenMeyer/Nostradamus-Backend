@@ -1,11 +1,12 @@
 module.exports = {
   logger: require("tracer").colorConsole({
     format: [
-      "{{timestamp}} <{{title}}> {{message}} (in {{file}}:{{line}})", //default format
+      "{{timestamp}} <{{title}}> {{message}} (in {{file}}:{{line}})",
       {
-        error: "{{timestamp}} <{{title}}> {{message}} (in {{file}}:{{line}})" // error format
+        error: "{{timestamp}} <{{title}}> {{message}} (in {{file}}:{{line}})"
       }
     ],
+
     dateformat: "HH:MM:ss.L",
     preprocess: function(data) {
       data.title = data.title.toUpperCase();
@@ -22,10 +23,7 @@ module.exports = {
     driver: "",
     connectionTimeout: 1500,
     options: {
-      // 'true' if you're on Windows Azure
       encrypt: false
     }
   },
-
-  // secretkey: process.env.SECRET_KEY
 };
