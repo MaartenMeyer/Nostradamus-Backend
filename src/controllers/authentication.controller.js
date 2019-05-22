@@ -20,7 +20,7 @@ module.exports = {
     try {
       assert.equal(typeof user.firstName, "string", "firstName is required.");
       assert.equal(typeof user.lastName, "string", "lastName is required.");
-      assert(dateValidator.test(dateOfBirth), "A valid dateOfBirth is required.");
+      assert(dateValidator.test(user.dateOfBirth), "A valid dateOfBirth is required.");
       assert(emailValidator.test(user.emailAddress), "A valid mailAddress is required.");
       assert(passwordValidator.test(user.password), "A valid password is required.");
       assert.equal(typeof user.accountType, "number", "A valid accountType is required.");
@@ -60,7 +60,7 @@ module.exports = {
     logger.info("loginUser called");
     const user = req.body;
 
-    const query = `SELECT Password, UserId FROM [DBUser] WHERE EmailAddress='${user.emailAddress}'`;
+    const query = `SELECT Password, UserId FROM user WHERE EmailAddress='${user.emailAddress}'`;
 
     database.executeQuery(query, (err, rows) => {
       if (err) {
