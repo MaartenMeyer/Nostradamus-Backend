@@ -12,18 +12,5 @@ module.exports = {
       data.title = data.title.toUpperCase();
     },
     level: "info"
-  }),
-
-  dbconfig: {
-    user: "",
-    password: "",
-    server: "",
-    database: "",
-    port: 1443,
-    driver: "",
-    connectionTimeout: 1500,
-    options: {
-      encrypt: false
-    }
-  },
+  })
 };

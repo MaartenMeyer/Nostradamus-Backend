@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express               = require("express");
 const logger                = require("./src/config/appconfig").logger;
 const authenticationRoutes  = require("./src/routes/authentication.routes");
