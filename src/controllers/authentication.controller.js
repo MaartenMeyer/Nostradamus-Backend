@@ -32,8 +32,8 @@ module.exports = {
 
       const query =
           "INSERT INTO `nostradamus`.`user` (`firstName`, `lastName`, `dateOfBirth`, `emailAddress`, `password`, `accountType`, `userNumber`) " +
-          "VALUES ('" + user.firstName + "', '" + user.lastName + "', '" + user.dateOfBirth + "', '" + user.emailAddress + "', '" + hash + "','" + user.accountType + "', '" + user.userNumber + "');";
-
+          "VALUES ('" + user.firstName + "', '" + user.lastName + "', '" + user.dateOfBirth + "', '" + user.emailAddress + "', '" + hash + "','" + user.accountType + "', '" + user.userNumber + "')"
+          " LAST_INSERT_ID();";
 
         logger.info(query);
 
