@@ -22,27 +22,21 @@ module.exports = {
       assert.equal(typeof user.accountType, "integer", "A valid accountType is required.");
       assert(dateValidator.test(user.dateOfBirth), "A valid dateOfBirth is required.");
       assert(emailValidator.test(user.emailAddress), "A valid mailAddress is required.");
-<<<<<<< HEAD
       //assert(passwordValidator.test(user.password), "A valid password is required.");
       assert.equal(typeof user.accountType, "number", "A valid accountType is required.");
       assest.equal(typeof user.userNumber, "number", "A valid userNumber is required.");
-=======
       assert(passwordValidator.test(user.password), "A valid password is required.");
       assest.equal(typeof user.userNumber, "integer", "A valid userNumber is required.");
->>>>>>> 68b3fcffa75bd8ae491ceb85e4570520c9816852
 
       const hash = bcrypt.hashSync(req.body.password, saltRounds);
 
       const query =
         `INSERT INTO user (firstName, lastName, dateOfBirth, emailAddress, password, accountType, usernumber)` +
         `VALUES ('${user.firstName}', '${user.lastName}', ` +
-<<<<<<< HEAD
         `'${user.dateOfBirth}','${user.emailAddress}', '${hash}','${user.accountType}')` +
         `; SELECT SCOPE_IDENTITY() AS UserId AND userNumber`;
-=======
         `'${user.dateOfBirth}', '${user.emailAddress}', '${user.password}', '${user.accountType}', '${user.userNumber}')` +
         `; SELECT SCOPE_IDENTITY() AS UserId`;
->>>>>>> 68b3fcffa75bd8ae491ceb85e4570520c9816852
 
       database.executeQuery(query, (err, rows) => {
         if (err) {
