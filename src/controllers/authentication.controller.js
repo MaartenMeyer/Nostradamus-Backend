@@ -1,5 +1,5 @@
 const logger        = require("../config/appconfig").logger;
-// const secretKey     = require("../config/appconfig").secretkey;
+const secretKey     = require("../config/appconfig").secretkey;
 const jwt           = require("jsonwebtoken");
 const database      = require("../datalayer/mysql.dao");
 const assert        = require("assert");
@@ -9,7 +9,6 @@ saltRounds = 10;
 
 // Regex voor check
 const emailValidator      = new RegExp('^(([^<>()\\[\\]\\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
-const passwordValidator   = new RegExp("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$");
 const dateValidator       = new RegExp('([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))');
 
 module.exports = {
@@ -18,6 +17,7 @@ module.exports = {
 
     // user informatie uit req.body halen
     const user = req.body;
+    logger.info(user)
 
     // Verifieer dat de juiste velden aanwezig zijn.
     try {
@@ -25,22 +25,21 @@ module.exports = {
       assert.equal(typeof user.lastName, "string", "lastName is required.");
       assert(dateValidator.test(user.dateOfBirth), "A valid dateOfBirth is required.");
       assert(emailValidator.test(user.emailAddress), "A valid mailAddress is required.");
-      //assert(passwordValidator.test(user.password), "A valid password is required.");
-      assert.equal(typeof user.accountType, "number", "A valid accountType is required.");
-      //assest.equal(typeof user.userNumber, "number", "A valid userNumber is required.");
+      assert.equal(typeof user.accountType,  "number","A valid accountType is required.");
+      assert.equal(typeof user.userNumber, "number", "A valid userNumber is required")
 
-      const hash = bcrypt.hashSync(req.body.password, saltRounds);
+      const hash = bcrypt.hashSync(user.password, saltRounds);
 
       const query =
-        `INSERT INTO user (firstName, lastName, dateOfBirth, emailAddress, password, accountType)` +
-        `VALUES ('${user.firstName}', '${user.lastName}', ` +
-        `'${user.dateOfBirth}','${user.emailAddress}', '${hash}','${user.accountType}')` +
-        `; SELECT SCOPE_IDENTITY() AS UserId AND userNumber`;
-        `'${user.dateOfBirth}', '${user.emailAddress}', '${user.password}', '${user.accountType}')` +
-        `; SELECT SCOPE_IDENTITY() AS UserId AND userNumber`;
+          "INSERT INTO `nostradamus`.`user` (`firstName`, `lastName`, `dateOfBirth`, `emailAddress`, `password`, `accountType`, `userNumber`) " +
+          "VALUES ('" + user.firstName + "', '" + user.lastName + "', '" + user.dateOfBirth + "', '" + user.emailAddress + "', '" + hash + "','" + user.accountType + "', '" + user.userNumber + "');";
 
-      database.executeQuery(query, (err, rows) => {
+
+        logger.info(query)
+
+      database.query(query, (err, rows) => {
         if (err) {
+          logger.warn(err)
           const errorObject = {
             message: "Something went wrong with the database.",
             code: 500
