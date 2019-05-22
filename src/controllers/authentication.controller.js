@@ -7,6 +7,7 @@ const bcrypt        = require("bcryptjs");
 
 saltRounds = 10;
 
+// Regex voor check
 const emailValidator      = new RegExp('^(([^<>()\\[\\]\\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
 const passwordValidator   = new RegExp("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$");
 const dateValidator       = new RegExp('([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))');
@@ -14,29 +15,29 @@ const dateValidator       = new RegExp('([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]
 module.exports = {
   registerUser: (req, res, next) => {
     logger.info("registerUser is called.");
+
+    // user informatie uit req.body halen
     const user = req.body;
 
+    // Verifieer dat de juiste velden aanwezig zijn.
     try {
       assert.equal(typeof user.firstName, "string", "firstName is required.");
       assert.equal(typeof user.lastName, "string", "lastName is required.");
-      assert.equal(typeof user.accountType, "integer", "A valid accountType is required.");
       assert(dateValidator.test(user.dateOfBirth), "A valid dateOfBirth is required.");
       assert(emailValidator.test(user.emailAddress), "A valid mailAddress is required.");
       //assert(passwordValidator.test(user.password), "A valid password is required.");
       assert.equal(typeof user.accountType, "number", "A valid accountType is required.");
-      assest.equal(typeof user.userNumber, "number", "A valid userNumber is required.");
-      assert(passwordValidator.test(user.password), "A valid password is required.");
-      assest.equal(typeof user.userNumber, "integer", "A valid userNumber is required.");
+      //assest.equal(typeof user.userNumber, "number", "A valid userNumber is required.");
 
       const hash = bcrypt.hashSync(req.body.password, saltRounds);
 
       const query =
-        `INSERT INTO user (firstName, lastName, dateOfBirth, emailAddress, password, accountType, usernumber)` +
+        `INSERT INTO user (firstName, lastName, dateOfBirth, emailAddress, password, accountType)` +
         `VALUES ('${user.firstName}', '${user.lastName}', ` +
         `'${user.dateOfBirth}','${user.emailAddress}', '${hash}','${user.accountType}')` +
         `; SELECT SCOPE_IDENTITY() AS UserId AND userNumber`;
-        `'${user.dateOfBirth}', '${user.emailAddress}', '${user.password}', '${user.accountType}', '${user.userNumber}')` +
-        `; SELECT SCOPE_IDENTITY() AS UserId`;
+        `'${user.dateOfBirth}', '${user.emailAddress}', '${user.password}', '${user.accountType}')` +
+        `; SELECT SCOPE_IDENTITY() AS UserId AND userNumber`;
 
       database.executeQuery(query, (err, rows) => {
         if (err) {
@@ -64,7 +65,7 @@ module.exports = {
     logger.info("loginUser called");
     const user = req.body;
 
-    const query = `SELECT Password, UserId FROM [DBUser] WHERE EmailAddress='${user.emailAddress}'`;
+    const query = `SELECT Password, UserId FROM user WHERE EmailAddress='${user.emailAddress}'`;
 
     database.executeQuery(query, (err, rows) => {
       if (err) {
