@@ -17,16 +17,16 @@ module.exports = {
 
     // user informatie uit req.body halen
     const user = req.body;
-    logger.info(user)
+    logger.info(user);
 
     // Verifieer dat de juiste velden aanwezig zijn.
     try {
-      assert.equal(typeof user.firstName, "string", "firstName is required.");
-      assert.equal(typeof user.lastName, "string", "lastName is required.");
+      assert.equal(typeof user.firstName, "string", "A valid firstName is required.");
+      assert.equal(typeof user.lastName, "string", "A valid lastName is required.");
       assert(dateValidator.test(user.dateOfBirth), "A valid dateOfBirth is required.");
       assert(emailValidator.test(user.emailAddress), "A valid mailAddress is required.");
       assert.equal(typeof user.accountType,  "number","A valid accountType is required.");
-      assert.equal(typeof user.userNumber, "number", "A valid userNumber is required")
+      assert.equal(typeof user.userNumber, "number", "A valid userNumber is required");
 
       const hash = bcrypt.hashSync(user.password, saltRounds);
 
@@ -35,11 +35,11 @@ module.exports = {
           "VALUES ('" + user.firstName + "', '" + user.lastName + "', '" + user.dateOfBirth + "', '" + user.emailAddress + "', '" + hash + "','" + user.accountType + "', '" + user.userNumber + "');";
 
 
-        logger.info(query)
+        logger.info(query);
 
       database.query(query, (err, rows) => {
         if (err) {
-          logger.warn(err)
+          logger.warn(err);
           const errorObject = {
             message: "Something went wrong with the database.",
             code: 500
@@ -47,7 +47,7 @@ module.exports = {
           next(errorObject);
         }
         if (rows) {
-          res.status(200).json({ result: rows.recordset });
+          res.status(200).json("User is registered");
         }
       });
 
@@ -61,13 +61,14 @@ module.exports = {
   },
 
   loginUser: (req, res, next) => {
-    logger.info("loginUser called");
+    logger.info("loginUser is called.");
     const user = req.body;
 
-    const query = `SELECT Password, UserId FROM user WHERE EmailAddress='${user.emailAddress}'`;
+    const query = `SELECT Password, UserId FROM user WHERE EmailAddress = '${user.emailAddress}'`;
 
-    database.executeQuery(query, (err, rows) => {
+    database.query(query, (err, rows) => {
       if (err) {
+        logger.warn(err);
         const errorObject = {
           message: "Something went wrong with the database.",
           code: 500
