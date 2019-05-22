@@ -29,9 +29,9 @@ module.exports = {
       const hash = bcrypt.hashSync(req.body.password, saltRounds);
 
       const query =
-        `INSERT INTO [DBUser] (FirstName, LastName, DateOfBirth, EmailAddress, Password)` +
+        `INSERT INTO user (firstName, lastName, dateOfBirth, emailAddress, password, accountType)` +
         `VALUES ('${user.firstName}', '${user.lastName}', ` +
-        `'${user.dateOfBirth}','${user.emailAddress}', '${hash}')` +
+        `'${user.dateOfBirth}','${user.emailAddress}', '${hash}','${user.accountType}')` +
         `; SELECT SCOPE_IDENTITY() AS UserId`;
 
       database.executeQuery(query, (err, rows) => {
