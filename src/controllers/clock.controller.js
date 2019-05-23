@@ -6,16 +6,12 @@ module.exports = {
     clockin: (req, res, next)=>{
         logger.info("Clocking in was called")
 
-<<<<<<< HEAD
-=======
         // hier komt in het request een binnen.
         const clock = req.body
-        logger.info(clock)
 
         const query =
-            "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) " +
-            "VALUES ('" + clock.userNumber + "','now()','" +
-            clock.branchId + "','" + clock.department + + "');";
+            "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) VALUES ('" + clock.userNumber + "',now(),'" + clock.branchId + "','" + clock.departmentId + "')";
+
 
         database.query(query, (err, rows) => {
             // verwerk error of result
@@ -30,7 +26,6 @@ module.exports = {
                 res.status(200).json({ result: rows.recordset})
             }
         })
->>>>>>> 739993d89f17385f77a6e7a57bfa6ff8056583db
     },
 
     clockoff: (req,res,next)=>{

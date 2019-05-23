@@ -5,7 +5,7 @@ const authenticationController  = require("../controllers/authentication.control
 
 
 
-router.post("/clocking", clockController.clockHandler);
+router.post("/clocking", clockController.clockin);
 // router.post("/clock\", clockController.clockoff);
 
 module.exports = router;
