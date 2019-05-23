@@ -2,7 +2,7 @@ const mysql     = require('mysql');
 const config  = require('../config/appconfig');
 const logger = require("tracer").colorConsole();
 
-// If online database doesnt work these are the settings for the online database
+// If online database doesn't work these are the settings for the online database
 let database = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
