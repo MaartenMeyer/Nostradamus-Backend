@@ -4,7 +4,7 @@ const assert        = require("assert");
 
 module.exports = {
     clockin: (req, res, next) => {
-        logger.info("Clocking in was called");
+        logger.info("clockin was called.");
 
         // hier komt in het request een binnen.
         const clock = req.body;
