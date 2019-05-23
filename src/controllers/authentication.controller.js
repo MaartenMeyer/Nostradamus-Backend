@@ -26,13 +26,14 @@ module.exports = {
       assert(dateValidator.test(user.dateOfBirth), "A valid dateOfBirth is required.");
       assert(emailValidator.test(user.emailAddress), "A valid mailAddress is required.");
       assert.equal(typeof user.accountTypeId,  "number","A valid accountType is required.");
+      assert.equal(typeof user.password, "string", "A valid password is required");
       assert.equal(typeof user.userNumber, "number", "A valid userNumber is required");
 
       const hash = bcrypt.hashSync(user.password, saltRounds);
 
       const query =
           "INSERT INTO `nostradamus`.`user` (`firstName`, `lastName`, `dateOfBirth`, `emailAddress`, `password`, `accountType`, `userNumber`) " +
-          "VALUES ('" + user.firstName + "', '" + user.lastName + "', '" + user.dateOfBirth + "', '" + user.emailAddress + "', '" + hash + "','" + user.accountType + "', '" + user.userNumber + "')"
+          "VALUES ('" + user.firstName + "', '" + user.lastName + "', '" + user.dateOfBirth + "', '" + user.emailAddress + "', '" + hash + "','" + user.accountTypeId + "', '" + user.userNumber + "')";
           " LAST_INSERT_ID();";
 
         logger.info(query);
