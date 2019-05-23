@@ -4,7 +4,7 @@
   "description": "Backend server for Nostradamus application",
   "main": "app.js",
   "scripts": {
-    "test": "test",
+    "test": "node test.js",
     "dev": "nodemon app.js",
     "start": "node app.js"
   },
