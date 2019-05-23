@@ -25,7 +25,7 @@ module.exports = {
       assert.equal(typeof user.lastName, "string", "A valid lastName is required.");
       assert(dateValidator.test(user.dateOfBirth), "A valid dateOfBirth is required.");
       assert(emailValidator.test(user.emailAddress), "A valid mailAddress is required.");
-      assert.equal(typeof user.accountType,  "number","A valid accountType is required.");
+      assert.equal(typeof user.accountTypeId,  "number","A valid accountType is required.");
       assert.equal(typeof user.userNumber, "number", "A valid userNumber is required");
 
       const hash = bcrypt.hashSync(user.password, saltRounds);
@@ -64,7 +64,11 @@ module.exports = {
     logger.info("loginUser is called.");
     const user = req.body;
 
-    const query = `SELECT Password, UserId FROM user WHERE EmailAddress = '${user.emailAddress}'`;
+    // const query = `SELECT Password, UserId FROM user WHERE EmailAddress = '${user.emailAddress}'`;
+
+    const query = "SELECT UserId, password  FROM nostradamus.user where emailAddress = '" + user.emailAddress + "'"
+
+    logger.info(query)
 
     database.query(query, (err, rows) => {
       if (err) {
@@ -77,20 +81,22 @@ module.exports = {
       }
 
       if (rows) {
-        logger.info(rows.recordset);
+        logger.info(rows);
 
         if (
-          rows.recordset.length === 1 && bcrypt.compareSync(req.body.password, rows.recordset[0].Password)
+            rows.length === 1 &&
+            bcrypt.compareSync(req.body.password, rows[0].password)
         ) {
           logger.info("Password match, user logged id.");
-          logger.trace(rows.recordset);
+          logger.info(rows[0].UserId);
 
           const payload = {
-            UserId: rows.recordset[0].UserId
+            UserId: rows[0].UserId
           };
+
           jwt.sign(
             { data: payload },
-            secretKey,
+            'secretKey',
             { expiresIn: 60 * 60 * 24 },
             (err, token) => {
 
@@ -104,9 +110,8 @@ module.exports = {
 
               if (token) {
                 res.status(200).json({
-                  result: {
-                    token: token
-                  }
+                  token: token ,
+                  message: "LOGIN SUCCESFULL!"
                 });
               }
             }
@@ -169,24 +174,4 @@ module.exports = {
       }
     });
   },
-
-  getAll: (req, res, next) => {
-    logger.info("getAll called");
-
-    const query = `SELECT * FROM [DBUser]`;
-
-    database.executeQuery(query, (err, rows) => {
-      if (err) {
-        const errorObject = {
-          message: "Something went wrong in the database.",
-          code: 500
-        };
-        next(errorObject);
-      }
-
-      if (rows) {
-        res.status(200).json({ result: rows.recordset });
-      }
-    });
-  }
 };
