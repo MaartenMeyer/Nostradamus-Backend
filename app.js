@@ -2,6 +2,7 @@
 const express               = require("express");
 const logger                = require("./src/config/appconfig").logger;
 const authenticationRoutes  = require("./src/routes/authentication.routes");
+const clockRoutes           = require("./src/routes/clock.routes");
 
 const app   = express();
 const port  = process.env.PORT || 3000;
@@ -15,6 +16,7 @@ app.all("*", (req, res, next) => {
 });
 
 app.use("/api", authenticationRoutes);
+app.use("/api", clockRoutes);
 
 app.all("*", (req, res, next) => {
   const { method, url } = req;
