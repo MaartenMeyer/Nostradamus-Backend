@@ -1,5 +1,5 @@
 const logger        = require("../config/appconfig").logger;
-const secretKey     = require("../config/appconfig").secretkey;
+// const secretKey     = require("../config/appconfig").secretkey;
 const jwt           = require("jsonwebtoken");
 const database      = require("../datalayer/mysql.dao");
 const assert        = require("assert");
