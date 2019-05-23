@@ -10,7 +10,6 @@ saltRounds = 10;
 // Regex voor check
   const emailValidator      = new RegExp('^(([^<>()\\[\\]\\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
 const dateValidator       = new RegExp('([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))');
-const passwordValidator   = new RegExp('^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$');
 
 module.exports = {
   registerUser: (req, res, next) => {
@@ -26,8 +25,8 @@ module.exports = {
       assert.equal(typeof user.lastName, "string", "A valid lastName is required.");
       assert(dateValidator.test(user.dateOfBirth), "A valid dateOfBirth is required.");
       assert(emailValidator.test(user.emailAddress), "A valid mailAddress is required.");
-      //assert(passwordValidator.test(user.password), "A valid password is required.");
       assert.equal(typeof user.accountType,  "number","A valid accountType is required.");
+      assert.equal(typeof user.password, "string", "A valid password is required");
       assert.equal(typeof user.userNumber, "number", "A valid userNumber is required");
 
       const hash = bcrypt.hashSync(user.password, saltRounds);
@@ -66,7 +65,11 @@ module.exports = {
     logger.info("loginUser is called.");
     const user = req.body;
 
-    const query = `SELECT Password, UserId FROM user WHERE EmailAddress = '${user.emailAddress}'`;
+    // const query = `SELECT Password, UserId FROM user WHERE EmailAddress = '${user.emailAddress}'`;
+
+    const query = "SELECT UserId, password  FROM nostradamus.user where emailAddress = '" + user.emailAddress + "'"
+
+    logger.info(query)
 
     database.query(query, (err, rows) => {
       if (err) {
@@ -79,20 +82,22 @@ module.exports = {
       }
 
       if (rows) {
-        logger.info(rows.recordset);
+        logger.info(rows);
 
         if (
-          rows.recordset.length === 1 && bcrypt.compareSync(req.body.password, rows.recordset[0].Password)
+            rows.length === 1 &&
+            bcrypt.compareSync(req.body.password, rows[0].password)
         ) {
           logger.info("Password match, user logged id.");
-          logger.trace(rows.recordset);
+          logger.info(rows[0].UserId);
 
           const payload = {
-            UserId: rows.recordset[0].UserId
+            UserId: rows[0].UserId
           };
+
           jwt.sign(
             { data: payload },
-            secretKey,
+            'secretKey',
             { expiresIn: 60 * 60 * 24 },
             (err, token) => {
 
@@ -106,9 +111,8 @@ module.exports = {
 
               if (token) {
                 res.status(200).json({
-                  result: {
-                    token: token
-                  }
+                  token: token ,
+                  message: "LOGIN SUCCESFULL!"
                 });
               }
             }
@@ -171,24 +175,4 @@ module.exports = {
       }
     });
   },
-
-  getAll: (req, res, next) => {
-    logger.info("getAll called");
-
-    const query = `SELECT * FROM [DBUser]`;
-
-    database.executeQuery(query, (err, rows) => {
-      if (err) {
-        const errorObject = {
-          message: "Something went wrong in the database.",
-          code: 500
-        };
-        next(errorObject);
-      }
-
-      if (rows) {
-        res.status(200).json({ result: rows.recordset });
-      }
-    });
-  }
 };
