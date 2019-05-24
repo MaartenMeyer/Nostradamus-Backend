@@ -7,8 +7,9 @@ module.exports = {
     clockHandler: (req,res,next)=>{
         logger.info("CLOCKHANDLER WAS CALLED")
 
+        // select 1 is for faster query searching
         const user = req.body;
-        const query = "SELECT * FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;"
+        const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;"
 
         database.query(query, (err, rows) => {
             // verwerk error of result
@@ -19,6 +20,7 @@ module.exports = {
                 };
                 next(errorObject)
             }
+            logger.info(rows)
 
             if (rows.length > 0) {
                 logger.info(rows + "ER WORD UITGEKLOKT")
