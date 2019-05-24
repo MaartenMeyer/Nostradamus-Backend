@@ -23,11 +23,11 @@ module.exports = {
             }
 
             if (rows) {
-<<<<<<< HEAD
+
                 res.status(200).json({ result: rows})
-=======
+
                 res.status(200).json("User is clocked in.");
->>>>>>> df54f61bab18f34e8aa48106bfec376ec208b393
+
             }
         })
     },
