@@ -34,14 +34,12 @@ module.exports = {
 
       const query =
           "INSERT INTO `nostradamus`.`user` (`firstName`, `lastName`, `userName`, `dateOfBirth`, `emailAddress`, `password`, `accountType`, `userNumber`) " +
-          "VALUES ('" + user.firstName + "', '" + user.lastName + "', '" + user.userName +"', '" + user.dateOfBirth + "', '" + user.emailAddress + "', '" + hash + "','" + user.accountType + "', '" + user.userNumber + "')";
+          "VALUES ('" + user.firstName + "', '" + user.lastName + "', '" + user.userName +"', '" + user.dateOfBirth + "', '" + user.emailAddress + "', '" + hash + "','" + user.accountType + "', '" + user.userNumber + "')"
           " LAST_INSERT_ID();";
 
-      logger.info(query);
-
+          // Verwerkt error of result.
       database.query(query, (err, rows) => {
         if (err) {
-          logger.warn(err);
           const errorObject = {
             message: "Something went wrong with the database.",
             code: 500
