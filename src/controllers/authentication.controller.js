@@ -148,7 +148,7 @@ module.exports = {
       return next(errorObject);
     }
 
-    jwt.verify(token, secretKey, (err, payload) => {
+    jwt.verify(token, 'secretKey', (err, payload) => {
       if (err) {
         errorObject = {
           message: "not authorized!",

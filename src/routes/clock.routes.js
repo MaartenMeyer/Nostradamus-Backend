@@ -6,7 +6,7 @@ const database                  = require("../datalayer/mysql.dao");
 const logger        = require("../config/appconfig").logger;
 
 
-router.post("/clocking", clockController.clockHandler);
+router.post("/clocking", authenticationController.validateToken, clockController.clockHandler);
 
 // router.post("/clocking",authenticationController.validateToken, clockController.clockoff);
 
