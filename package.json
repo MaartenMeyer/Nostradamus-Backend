@@ -26,11 +26,11 @@
     "tracer": "^0.9.8"
   },
   "devDependencies": {
-    "mocha": "^6.1.4",
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
+    "mocha": "^6.1.4",
+    "nodemon": "^1.19.0",
     "prettier": "^1.17.1",
-    "prettier-quick": "0.0.5",
-    "nodemon": "^1.19.0"
+    "prettier-quick": "0.0.5"
   }
 }
