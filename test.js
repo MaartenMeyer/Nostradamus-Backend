@@ -3,6 +3,7 @@ const chai      = require('chai');
 const chaiHttp  = require('chai-http');
 const jwt       = require('jsonwebtoken');
 const server    = require('./app.js');
+const assert    = require('assert');
 
 chai.should();
 chai.use(chaiHttp);
@@ -13,7 +14,7 @@ const authorization     = 'Authorization';
 
 let token;
 
-// Informatie nodig voordat de testen kunnen worden gerund.
+//Informatie nodig voordat de testen kunnen worden gerund.
 before(() => {
     console.log('before');
 
@@ -32,48 +33,50 @@ beforeEach(() => {
    console.log('- beforeEach');
 });
 
-// De testen als controle voor de applicatie.
+// De testen voor de registratie.
 describe('Register', () => {
+   it('Register a valid user', done => {
+       chai.request(server)
+           .post('/api/register')
+           .set('Content-Type', 'application/json')
+           .send({
+               "firstName": "Frenkie",
+               "lastName": "de Jong",
+               "userName": "FdeJong2",
+               "dateOfBirth": "1999-12-31",
+               "emailAddress": "thegoat2@ajax.nl",
+               "password": "secret",
+               "accountType": 1,
+               "userNumber": 342
+           })
 
-    it('Register valid user', done => {
+           .end(function (err, res, body) {
+               res.should.have.status(200);
+               res.shoud.be.a("User is registered");
+               done()
+           })
+   });
+
+    it('Register an  unvalid user', done => {
         chai.request(server)
             .post('/api/register')
-            .end(function (err, res) {
-                res.should.have.status(200);
-                res.body.should.be.a("User is registered");
-                done();
+            .set('Content-Type', 'application/json')
+            .send({
+                "firstName": "Frenkie",
+                "lastName": "de Jong",
+                "userName": "FdeJong69",
+                "dateOfBirth": "1999-12-31",
+                "emailAddress": "thegoat2@ajax.nl",
+                "password": "secret",
+                "accountType": 3,
+                "userNumber": 976
             })
-    });
 
-    it('Register unvalid user', done => {
-        chai.request(server)
-            .post('/api/register')
-            .end(function (err, res) {
+            .end(function (err, res, body) {
                 res.should.have.status(500);
                 res.should.be.a('object');
-                done();
+                done()
             })
-    });
+    })
 });
-describe('Login', () => {
 
-    it('Login valid user', done => {
-        chai.request(server)
-            .post('/api/login')
-            .end(function (err, res) {
-                res.should.have.status(200);
-                res.body.should.be.a('object');
-                done();
-            })
-    });
-
-    it('Login unvalid user', done => {
-        chai.request(server)
-            .post('/api/login')
-            .end(function (err, res) {
-                res.should.have.status(501);
-                res.body.should.be.a('object');
-                done();
-            })
-    });
-});
