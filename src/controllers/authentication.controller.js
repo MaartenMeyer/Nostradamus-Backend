@@ -34,7 +34,7 @@ module.exports = {
       const query =
           "INSERT INTO `nostradamus`.`user` (`firstName`, `lastName`, `dateOfBirth`, `emailAddress`, `password`, `accountType`, `userNumber`) " +
           "VALUES ('" + user.firstName + "', '" + user.lastName + "', '" + user.dateOfBirth + "', '" + user.emailAddress + "', '" + hash + "','" + user.accountType + "', '" + user.userNumber + "')"
-      " LAST_INSERT_ID();";
+          " LAST_INSERT_ID();";
 
       logger.info(query);
 
@@ -47,14 +47,15 @@ module.exports = {
           };
           next(errorObject);
         }
+
         if (rows) {
           res.status(200).json("User is registered");
         }
       });
 
-    } catch (ex) {
+    } catch (e) {
       const errorObject = {
-        message: "Validation fails: " + ex.toString(),
+        message: "Validation fails: " + e.toString(),
         code: 500
       };
       return next(errorObject);
@@ -67,9 +68,9 @@ module.exports = {
 
     // const query = `SELECT Password, UserId FROM user WHERE EmailAddress = '${user.emailAddress}'`;
 
-    const query = "SELECT UserId, password  FROM nostradamus.user where emailAddress = '" + user.emailAddress + "'"
+    const query = "SELECT UserId, password  FROM nostradamus.user where emailAddress = '" + user.emailAddress + "'";
 
-    logger.info(query)
+    logger.info(query);
 
     database.query(query, (err, rows) => {
       if (err) {
@@ -112,7 +113,7 @@ module.exports = {
               if (token) {
                 res.status(200).json({
                   token: token ,
-                  message: "LOGIN SUCCESFULL!"
+                  message: "Login succeeded!"
                 });
               }
             }
@@ -174,5 +175,5 @@ module.exports = {
         next(errorObject);
       }
     });
-  },
+  }
 };

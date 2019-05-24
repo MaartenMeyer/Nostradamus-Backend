@@ -21,7 +21,9 @@ app.use("/api", clockRoutes);
 app.all("*", (req, res, next) => {
   const { method, url } = req;
   const errorMessage = `${method} ${url} does not exist.`;
+
   logger.warn(errorMessage);
+
   const errorObject = {
     message: errorMessage,
     code: 404,
