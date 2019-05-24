@@ -250,6 +250,7 @@ CREATE TABLE `user` (
   `UserId` int(11) NOT NULL AUTO_INCREMENT,
   `firstName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `lastName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `userName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `dateOfBirth` date NOT NULL,
   `emailAddress` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
@@ -257,6 +258,7 @@ CREATE TABLE `user` (
   `userNumber` int(11) NOT NULL,
   PRIMARY KEY (`UserId`),
   UNIQUE KEY `UserId_UNIQUE` (`UserId`),
+  UNIQUE KEY `userName_UNIQUE` (`userName`),
   UNIQUE KEY `emailAddress_UNIQUE` (`emailAddress`),
   UNIQUE KEY `userNumber_UNIQUE` (`userNumber`),
   KEY `accountTypeId_FK_idx` (`accountType`),
@@ -270,7 +272,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Mick','Theuns','2001-08-21','mtheuns@outlook.com','testwachtwoord123',1,1),(2,'Tim','Ooijen','2001-10-23','tim.ooijen@gmail.com','wachtwoord123',1,2);
+INSERT INTO `user` VALUES (1,'Mick','Theuns','MTheuns', '2001-08-21','mtheuns@outlook.com','testwachtwoord123',1,1),(2,'Tim','Ooijen','TOoijen','2001-10-23','tim.ooijen@gmail.com','wachtwoord123',1,2);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
