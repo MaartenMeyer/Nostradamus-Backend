@@ -20,7 +20,6 @@ module.exports = {
                 next(errorObject)
             }
 
-<<<<<<< HEAD
             if (rows.length > 0) {
                 logger.info(rows + "ER WORD UITGEKLOKT")
 
@@ -43,7 +42,7 @@ module.exports = {
                     }
                 })
             } else {
-                logger.info(rows + "ER WORD INGEKLOKT")
+                logger.info(rows + "ER WORD INGEKLOKT");
 
                 const clock = req.body;
 
@@ -62,14 +61,7 @@ module.exports = {
                     if (rows) {
                         res.status(200).json("User is clocked in.");
                     }
-                })
-=======
-            if (rows) {
-
-                res.status(200).json({ result: rows})
-
-                res.status(200).json("User is clocked in.");
-
+                });
             }
         })
     },
@@ -97,7 +89,7 @@ module.exports = {
             }
             if (rows) {
                 res.status(200).json({ result: rows})
->>>>>>> 74803f33b12caf88607a68907b754f0db2183baf
+
             }
         })
     }
