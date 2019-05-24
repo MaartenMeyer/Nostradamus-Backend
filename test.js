@@ -79,6 +79,8 @@ describe('Register', () => {
             })
     })
 });
+
+// De testen voor het inloggen.
 describe('Login', () => {
    it('Login with a valid user', done => {
        chai.request(server)
