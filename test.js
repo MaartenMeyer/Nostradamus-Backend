@@ -39,20 +39,20 @@ describe('Register', () => {
        chai.request(server)
            .post('/api/register')
            .set('Content-Type', 'application/json')
+
            .send({
-               "firstName": "Frenkie",
-               "lastName": "de Jong",
-               "userName": "FdeJong2",
-               "dateOfBirth": "1999-12-31",
-               "emailAddress": "thegoat2@ajax.nl",
-               "password": "secret",
+               "firstName": "Rick",
+               "lastName": "van Vliet",
+               "userName": "rvvliet2",
+               "dateOfBirth": "1999-08-24",
+               "emailAddress": "helloworld2@gmail.com",
+               "password": "HelloWorld66",
                "accountType": 1,
-               "userNumber": 342
+               "userNumber": 1256662
            })
 
            .end(function (err, res, body) {
                res.should.have.status(200);
-               res.shoud.be.a("User is registered");
                done()
            })
    });
@@ -61,11 +61,12 @@ describe('Register', () => {
         chai.request(server)
             .post('/api/register')
             .set('Content-Type', 'application/json')
+
             .send({
                 "firstName": "Frenkie",
                 "lastName": "de Jong",
-                "userName": "FdeJong69",
-                "dateOfBirth": "1999-12-31",
+                "userName": "FdeJong2",
+                "dateOfBirth": "1999-06-31",
                 "emailAddress": "thegoat2@ajax.nl",
                 "password": "secret",
                 "accountType": 3,
@@ -74,7 +75,39 @@ describe('Register', () => {
 
             .end(function (err, res, body) {
                 res.should.have.status(500);
-                res.should.be.a('object');
+                done()
+            })
+    })
+});
+describe('Login', () => {
+   it('Login with a valid user', done => {
+       chai.request(server)
+           .post('/api/login')
+           .set('Content-Type', 'application/json')
+
+           .send( {
+               "userName": "rvvliet",
+               "password": "HelloWorld66"
+           })
+
+           .end(function (err, res, body) {
+               res.should.have.status(200);
+               done()
+           })
+   });
+
+    it('Login with an unvalid user', done => {
+        chai.request(server)
+            .post('/api/login')
+            .set('Content-Type', 'application/json')
+
+            .send( {
+                "userName": "helloworld",
+                "password": "SecretKey11"
+            })
+
+            .end(function (err, res, body) {
+                res.should.have.status(401);
                 done()
             })
     })
