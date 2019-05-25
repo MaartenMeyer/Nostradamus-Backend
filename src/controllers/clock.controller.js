@@ -20,10 +20,8 @@ module.exports = {
                 };
                 next(errorObject)
             }
-            logger.info(rows)
 
             if (rows.length > 0) {
-                logger.info(rows + "Er wordt uitgeklokt");
 
                 const clock = req.body;
 
@@ -44,8 +42,6 @@ module.exports = {
                     }
                 })
             } else {
-                logger.info(rows + "Er wordt ingeklokt");
-
                 const clock = req.body;
 
                 const query =
@@ -64,43 +60,7 @@ module.exports = {
                         res.status(200).json("User is clocked in.");
                     }
                 });
-
-                if (rows) {
-
-                    res.status(200).json({result: rows});
-
-                    res.status(200).json("User is clocked in.");
-
-                }
             }
         })
     },
-
-    clockoff: (req,res,next)=>{
-        logger.info("Clocking off was called");
-
-        // hier komt in het request een binnen.
-        const clock = req.body;
-
-        // const query =
-        //     "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) VALUES ('" + clock.userNumber + "',now(),'" + clock.branchId + "','" + clock.departmentId + "')";
-
-        const query = "UPDATE `nostradamus`.`clocking_system` SET `endTime` = now() WHERE (endTime IS null AND userNumber = " + clock.userNumber + ");";
-
-
-        // verwerk error of result
-        database.query(query, (err, rows) => {
-            if (err) {
-                const errorObject = {
-                    message: 'Something went wrong in the database.',
-                    code: 500
-                };
-                next(errorObject)
-            }
-
-            if (rows) {
-                res.status(200).json({ result: rows})
-            }
-        })
-    }
 };
