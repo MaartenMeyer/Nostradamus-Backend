@@ -52,7 +52,7 @@ describe('Register', () => {
            })
 
            .end(function (err, res, body) {
-               res.should.have.status(200);
+               res.should.have.status(500);
                done()
            })
    });
@@ -93,7 +93,7 @@ describe('Login', () => {
            })
 
            .end(function (err, res, body) {
-               res.should.have.status(200);
+               res.should.have.status(401);
                done()
            })
    });
