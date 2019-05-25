@@ -67,7 +67,7 @@ module.exports = {
 
                 if (rows) {
 
-                    res.status(200).json({result: rows});
+                    //res.status(200).json({result: rows});
 
                     res.status(200).json("User is clocked in.");
 
