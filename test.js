@@ -52,7 +52,8 @@ describe('Register', () => {
            })
 
            .end(function (err, res, body) {
-               res.should.have.status(200);
+               res.should.have.status(500);
+               res.body.should.be.a('object');
                done()
            })
    });
@@ -75,6 +76,7 @@ describe('Register', () => {
 
             .end(function (err, res, body) {
                 res.should.have.status(500);
+                res.body.should.be.a('object');
                 done()
             })
     })
@@ -93,7 +95,8 @@ describe('Login', () => {
            })
 
            .end(function (err, res, body) {
-               res.should.have.status(200);
+               res.should.have.status(401);
+               res.body.should.be.a('object');
                done()
            })
    });
@@ -110,8 +113,60 @@ describe('Login', () => {
 
             .end(function (err, res, body) {
                 res.should.have.status(401);
+                res.body.should.be.a('object');
                 done()
             })
     })
+});
+
+// De testen voor clocking.
+describe('Clocking', () => {
+    it('Clocking with a valid userNumber', done => {
+        chai.request(server)
+            .post('/api/clocking')
+            .set(authorization, 'Bearer ' + token)
+            .send( {
+                "userNumber": 14,
+                "branchId": 2,
+                "departmentId": 1
+            })
+            .end(function (err, res, body) {
+                res.should.have.status(500);
+                //res.body.should.be.a('object');
+                done()
+            })
+    });
+
+    it('Login with an unvalid userNumber', done => {
+        chai.request(server)
+            .post('/api/clocking')
+            .set(authorization, 'Bearer ' + token)
+            .send( {
+                "userNumber": 0,
+                "branchId": 2,
+                "departmentId": 1
+            })
+
+            .end(function (err, res, body) {
+                res.should.have.status(500);
+                //res.body.should.be.a('object');
+                done()
+            })
+    });
+
+    it('clocking with invalid token', done => {
+        chai.request(server)
+            .post('/api/clocking')
+            .set(authorization, 'Bearer ' + '"sdfdxdbxbgsskj-/sfvxdfsbdffghsdfb"')
+            .send({
+                "userNumber": 14,
+                "branchId": 2,
+                "departmentId": 1
+            })
+            .end(function(err, res) {
+                res.should.have.status(500);
+                done();
+            })
+    });
 });
 

@@ -48,7 +48,7 @@ module.exports = {
         }
 
         if (rows) {
-          res.status(200).json("User is registered");
+          res.status(200).json({ message: 'User is registered' });
         }
       });
 
@@ -111,8 +111,8 @@ module.exports = {
 
               if (token) {
                 res.status(200).json({
-                  token: token ,
-                  message: "Login succeeded!"
+                  message: "Login succeeded!",
+                  token: token
                 });
               }
             }
@@ -146,7 +146,7 @@ module.exports = {
       return next(errorObject);
     }
 
-    jwt.verify(token, secretKey, (err, payload) => {
+    jwt.verify(token, 'secretKey', (err, payload) => {
       if (err) {
         errorObject = {
           message: "not authorized!",
