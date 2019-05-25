@@ -60,17 +60,6 @@ module.exports = {
                         res.status(200).json("User is clocked in.");
                     }
                 });
-<<<<<<< HEAD
-=======
-
-                if (rows) {
-
-                    //res.status(200).json({result: rows});
-
-                    res.status(200).json("User is clocked in.");
-
-                }
->>>>>>> 92cbd2e3ac4aaafd337ac4c3dc3b0a3000890fba
             }
         })
     },

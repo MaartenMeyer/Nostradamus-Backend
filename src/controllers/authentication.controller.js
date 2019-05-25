@@ -69,8 +69,6 @@ module.exports = {
 
     const query = "SELECT UserId, password  FROM nostradamus.user where userName = '" + user.userName + "'";
 
-    logger.info(query);
-
     database.query(query, (err, rows) => {
       if (err) {
         logger.warn(err);
@@ -89,7 +87,6 @@ module.exports = {
             bcrypt.compareSync(req.body.password, rows[0].password)
         ) {
           logger.info("Password match, user logged id.");
-          logger.info(rows[0].UserId);
 
           const payload = {
             UserId: rows[0].UserId

@@ -33,7 +33,7 @@ app.all("*", (req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-  logger.error("Error handler: ", error.message.toString());
+  // logger.error("Error handler: ", error.message.toString());
   res.status(error.code).json(error);
 });
 
