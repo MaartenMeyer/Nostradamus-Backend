@@ -47,7 +47,6 @@ module.exports = {
                 const query =
                     "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) VALUES ('" + clock.userNumber + "',now(),'" + clock.branchId + "','" + clock.departmentId + "')";
 
-                // verwerk error of result
                 database.query(query, (err, rows) => {
                     if (err) {
                         const errorObject = {
@@ -63,4 +62,70 @@ module.exports = {
             }
         })
     },
+
+    breakHandler: (req, res, next)=>{
+        logger.info("breakHandler was called")
+
+        const user = req.body;
+        const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;"
+
+        database.query(query, (err, rows) => {
+            if (err) {
+                const errorObject = {
+                    message: "Something went wrong with the database.",
+                    code: 500
+                };
+                next(errorObject);
+            }
+
+            const breaking = req.body;
+            const query2 = "SELECT * FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + breaking.userNumber + ";";
+
+            database.query(query2, (err, rows2)=>{
+                if (err) {
+                    const errorObject = {
+                        message: "Something went wrong with the database.",
+                        code: 500
+                    };
+                    next(errorObject);
+                }
+
+                if (rows.length > 0 && rows2.length === 0){
+                    const breaking = req.body;
+
+                    const query =
+                        "INSERT INTO `nostradamus`.`break_system` (`userNumber`, `beginTime`) VALUES ('" + breaking.userNumber + "', now());";
+
+                    database.query(query, (err, rows) =>{
+                        if (err){
+                            const errorObject = {
+                                message: "Something went wrong with the database.",
+                                code: 500
+                            };
+                            next(errorObject)
+                        }
+                        res.status(200).json("User break clocked in.")
+                    })
+                } else if (rows.length === 0) {
+                    res.status(500).json("User isn't clocked in yet. ")
+                } else {
+                    const breaking = req.body;
+
+                    const query =
+                        "UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE (`userNumber` = '" + breaking.userNumber + "' AND endTime IS NULL);";
+
+                    database.query(query, (err, rows) =>{
+                        if (err){
+                            const errorObject = {
+                                message: "Something went wrong with the database.",
+                                code: 500
+                            };
+                            next(errorObject)
+                        }
+                        res.status(200).json("User break clocked off.")
+                    })
+                }
+            });
+        });
+    }
 };

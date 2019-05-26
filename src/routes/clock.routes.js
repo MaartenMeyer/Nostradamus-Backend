@@ -9,4 +9,6 @@ const logger                    = require("../config/appconfig").logger;
 // router.post("/clocking", authenticationController.validateToken, clockController.clockHandler);
 router.post("/clocking", clockController.clockHandler);
 
+router.post("/breaking", clockController.breakHandler);
+
 module.exports = router;
