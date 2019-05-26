@@ -38,7 +38,7 @@ module.exports = {
                         next(errorObject)
                     }
                     if (rows) {
-                        res.status(200).json("User is clocked off.");
+                        res.status(200).json({ message: 'User is clocked off.' });
                     }
                 })
             } else {
@@ -56,7 +56,7 @@ module.exports = {
                         next(errorObject)
                     }
                     if (rows) {
-                        res.status(200).json("User is clocked in.");
+                        res.status(200).json({ message: 'User is clocked in.' });
                     }
                 });
             }

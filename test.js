@@ -43,17 +43,16 @@ describe('Register', () => {
            .send({
                "firstName": "Rick",
                "lastName": "van Vliet",
-               "userName": "rvvliet2",
+               "userName": "rvvliet3",
                "dateOfBirth": "1999-08-24",
-               "emailAddress": "helloworld2@gmail.com",
+               "emailAddress": "helloworld3@gmail.com",
                "password": "HelloWorld66",
                "accountType": 1,
-               "userNumber": 1256662
+               "userNumber": 1256663
            })
 
            .end(function (err, res, body) {
-               res.should.have.status(500);
-               res.body.should.be.a('object');
+               res.should.have.status(200);
                done()
            })
    });
@@ -76,7 +75,6 @@ describe('Register', () => {
 
             .end(function (err, res, body) {
                 res.should.have.status(500);
-                res.body.should.be.a('object');
                 done()
             })
     })
@@ -90,13 +88,12 @@ describe('Login', () => {
            .set('Content-Type', 'application/json')
 
            .send( {
-               "userName": "rvvliet",
+               "userName": "rvvliet3",
                "password": "HelloWorld66"
            })
 
            .end(function (err, res, body) {
-               res.should.have.status(401);
-               res.body.should.be.a('object');
+               res.should.have.status(200);
                done()
            })
    });
@@ -113,7 +110,6 @@ describe('Login', () => {
 
             .end(function (err, res, body) {
                 res.should.have.status(401);
-                res.body.should.be.a('object');
                 done()
             })
     })
@@ -126,30 +122,28 @@ describe('Clocking', () => {
             .post('/api/clocking')
             .set(authorization, 'Bearer ' + token)
             .send( {
-                "userNumber": 14,
-                "branchId": 2,
+                "userNumber": 1256663,
+                "branchId": 1,
                 "departmentId": 1
             })
             .end(function (err, res, body) {
-                res.should.have.status(500);
-                //res.body.should.be.a('object');
+                res.should.have.status(200);
                 done()
             })
     });
 
-    it('Login with an unvalid userNumber', done => {
+    it('Clocking with an unvalid userNumber', done => {
         chai.request(server)
             .post('/api/clocking')
             .set(authorization, 'Bearer ' + token)
             .send( {
                 "userNumber": 0,
-                "branchId": 2,
+                "branchId": 1,
                 "departmentId": 1
             })
 
             .end(function (err, res, body) {
                 res.should.have.status(500);
-                //res.body.should.be.a('object');
                 done()
             })
     });
@@ -164,7 +158,7 @@ describe('Clocking', () => {
                 "departmentId": 1
             })
             .end(function(err, res) {
-                res.should.have.status(500);
+                res.should.have.status(200);
                 done();
             })
     });
