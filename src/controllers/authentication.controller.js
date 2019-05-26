@@ -159,6 +159,7 @@ module.exports = {
       if (payload.data && payload.data.UserId) {
         logger.debug("token is valid", payload);
         req.userId = payload.data.UserId;
+        jwt.sign(payload).expiresIn(60 * 60 * 24);
         next();
       }
 
