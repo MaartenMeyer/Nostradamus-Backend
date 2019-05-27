@@ -149,7 +149,6 @@ module.exports = {
           message: "not authorized!",
           code: 401
         };
-
         logger.warn("Validate token failed: ", errorObject.message);
         next(errorObject);
       }
@@ -159,7 +158,7 @@ module.exports = {
       if (payload.data && payload.data.UserId) {
         logger.debug("token is valid", payload);
         req.userId = payload.data.UserId;
-        jwt.sign(payload).expiresIn(60 * 60 * 24);
+        //jwt.sign(payload).expiresIn(60 * 60 * 24);
         next();
       }
 

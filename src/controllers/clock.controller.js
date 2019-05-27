@@ -9,7 +9,9 @@ module.exports = {
 
         // select 1 is for faster query searching
         const user = req.body;
-        const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;"
+        const clock = req.body;
+
+        const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
 
         // verwerk error of result
         database.query(query, (err, rows) => {
@@ -22,11 +24,7 @@ module.exports = {
             }
 
             if (rows.length > 0) {
-
-                const clock = req.body;
-
                 const query = "UPDATE `nostradamus`.`clocking_system` SET `endTime` = now() WHERE (endTime IS null AND userNumber = " + clock.userNumber + ");";
-
 
                 // verwerk error of result
                 database.query(query, (err, rows) => {
@@ -37,13 +35,15 @@ module.exports = {
                         };
                         next(errorObject)
                     }
+
                     if (rows) {
                         res.status(200).json({ message: 'User is clocked off.' });
                     }
                 })
-            } else {
-                const clock = req.body;
+            }
 
+            else {
+                const clock = req.body;
                 const query =
                     "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) VALUES ('" + clock.userNumber + "',now(),'" + clock.branchId + "','" + clock.departmentId + "')";
 
@@ -55,6 +55,7 @@ module.exports = {
                         };
                         next(errorObject)
                     }
+
                     if (rows) {
                         res.status(200).json({ message: 'User is clocked in.' });
                     }
