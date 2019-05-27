@@ -6,9 +6,23 @@ module.exports = {
 
     clockHandler: (req,res,next)=>{
         logger.info("clockHandler was called.");
+        const user = req.body;
+
+        // If there is still a pause clocked in, is is now clocked out
+        const query2 = "SELECT 1 FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + user.userNumber + ";";
+
+        database.query(query2, (err, rows)=>{
+            if (rows.length > 0){
+                const query3 = "UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
+
+                database.query(query3, (err, rows)=>{
+                    logger.info("USER ALSO BREAK CLOCKED OFF")
+                })
+            }
+        })
 
         // select 1 is for faster query searching
-        const user = req.body;
+
         const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;"
 
         // verwerk error of result
@@ -61,6 +75,8 @@ module.exports = {
                 });
             }
         })
+
+
     },
 
     breakHandler: (req, res, next)=>{
