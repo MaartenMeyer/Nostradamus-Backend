@@ -3,11 +3,9 @@ const logger        = require("../config/appconfig").logger;
 const database      = require("../datalayer/mysql.dao");
 
 module.exports = {
-
     clockHandler: (req,res,next)=>{
         logger.info("clockHandler was called.");
         const user = req.body;
-
 
         // If there is still a pause clocked in, is is now clocked out
         const query2 = "SELECT 1 FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + user.userNumber + ";";
@@ -26,7 +24,6 @@ module.exports = {
         const clock = req.body;
 
         const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
-
 
         // Return error or result.
         database.query(query, (err, rows) => {
