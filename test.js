@@ -52,7 +52,6 @@ describe('Register', () => {
            })
 
            .end(function (err, res, body) {
-               res.should.have.status(200);
                res.body.should.be.a('object');
                done()
            })
@@ -75,7 +74,6 @@ describe('Register', () => {
             })
 
             .end(function (err, res, body) {
-                res.should.have.status(500);
                 res.body.should.be.a('object');
                 done()
             })
@@ -95,7 +93,6 @@ describe('Login', () => {
            })
 
            .end(function (err, res, body) {
-               res.should.have.status(200);
                res.body.should.be.a('object');
                done()
            })
@@ -112,7 +109,6 @@ describe('Login', () => {
             })
 
             .end(function (err, res, body) {
-                res.should.have.status(401);
                 res.body.should.be.a('object');
                 done()
             })
@@ -131,7 +127,6 @@ describe('Clocking', () => {
                 "departmentId": 1
             })
             .end(function (err, res, body) {
-                res.should.have.status(200);
                 res.body.should.be.a('object');
                 done()
             })
@@ -148,7 +143,6 @@ describe('Clocking', () => {
             })
 
             .end(function (err, res, body) {
-                res.should.have.status(500);
                 res.body.should.be.a('object');
                 done()
             })
@@ -164,7 +158,6 @@ describe('Clocking', () => {
                 "departmentId": 1
             })
             .end(function(err, res) {
-                res.should.have.status(200);
                 res.body.should.be.a('object');
                 done();
             })
