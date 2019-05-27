@@ -11,6 +11,6 @@ module.exports = {
     preprocess: function(data) {
       data.title = data.title.toUpperCase();
     },
-    level: "info"
+    level: "info, error"
   })
 };
