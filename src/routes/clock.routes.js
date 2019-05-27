@@ -6,12 +6,10 @@ const router                    = express.Router();
 const authenticationController  = require("../controllers/authentication.controller");
 const clockController           = require("../controllers/clock.controller");
 
-// router.post("/clocking", authenticationController.validateToken, clockController.clockHandler);
-router.post("/clocking", clockController.clockHandler);
+// router.post("/clocking", clockController.clockHandler);
+// router.post("/breaking", clockController.breakHandler);
 
-router.post("/breaking", clockController.breakHandler);
-
-// router.post("/clocking", authenticationController.validateToken, clockController.clockHandler);
-// router.post("/breaking", authenticationController.validateToken, clockController.breakHandler);
+router.post("/clocking", authenticationController.validateToken, clockController.clockHandler);
+router.post("/breaking", authenticationController.validateToken, clockController.breakHandler);
 
 module.exports = router;

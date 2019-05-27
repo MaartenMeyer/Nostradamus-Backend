@@ -20,7 +20,7 @@ module.exports = {
                     logger.info("USER ALSO BREAK CLOCKED OFF")
                 })
             }
-        })
+        });
 
         // select 1 is for faster query searching
         const clock = req.body;
