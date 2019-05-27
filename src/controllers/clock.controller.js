@@ -7,7 +7,7 @@ module.exports = {
     clockHandler: (req,res,next)=>{
         logger.info("clockHandler was called.");
         const user = req.body;
-<<<<<<< HEAD
+
 
         // If there is still a pause clocked in, is is now clocked out
         const query2 = "SELECT 1 FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + user.userNumber + ";";
@@ -23,13 +23,10 @@ module.exports = {
         })
 
         // select 1 is for faster query searching
-
-        const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;"
-=======
         const clock = req.body;
 
         const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
->>>>>>> fae45e84b83a95ff3f823230c7fdf36e2a57c193
+
 
         // Return error or result.
         database.query(query, (err, rows) => {
