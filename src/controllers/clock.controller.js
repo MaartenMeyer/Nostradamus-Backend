@@ -104,10 +104,10 @@ module.exports = {
                             };
                             next(errorObject)
                         }
-                        res.status(200).json("User break clocked in.")
+                        res.status(200).json({ message: 'User break clocked in.' })
                     })
                 } else if (rows.length === 0) {
-                    res.status(500).json("User isn't clocked in yet. ")
+                    res.status(500).json({ message: 'User is not clocked in yet.' })
                 } else {
                     const breaking = req.body;
 
@@ -122,7 +122,7 @@ module.exports = {
                             };
                             next(errorObject)
                         }
-                        res.status(200).json("User break clocked off.")
+                        res.status(200).json({ message: 'User break clocked off.' })
                     })
                 }
             });
