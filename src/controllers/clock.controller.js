@@ -1,12 +1,13 @@
+// The used libraries from node_modules.
 const logger        = require("../config/appconfig").logger;
 const database      = require("../datalayer/mysql.dao");
-const assert        = require("assert");
 
 module.exports = {
 
     clockHandler: (req,res,next)=>{
         logger.info("clockHandler was called.");
         const user = req.body;
+<<<<<<< HEAD
 
         // If there is still a pause clocked in, is is now clocked out
         const query2 = "SELECT 1 FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + user.userNumber + ";";
@@ -24,8 +25,13 @@ module.exports = {
         // select 1 is for faster query searching
 
         const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;"
+=======
+        const clock = req.body;
 
-        // verwerk error of result
+        const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
+>>>>>>> fae45e84b83a95ff3f823230c7fdf36e2a57c193
+
+        // Return error or result.
         database.query(query, (err, rows) => {
             if (err) {
                 const errorObject = {
@@ -36,13 +42,9 @@ module.exports = {
             }
 
             if (rows.length > 0) {
-
-                const clock = req.body;
-
                 const query = "UPDATE `nostradamus`.`clocking_system` SET `endTime` = now() WHERE (endTime IS null AND userNumber = " + clock.userNumber + ");";
 
-
-                // verwerk error of result
+                // Return error or result.
                 database.query(query, (err, rows) => {
                     if (err) {
                         const errorObject = {
@@ -51,16 +53,19 @@ module.exports = {
                         };
                         next(errorObject)
                     }
+
                     if (rows) {
                         res.status(200).json({ message: 'User is clocked off.' });
                     }
                 })
-            } else {
-                const clock = req.body;
+            }
 
+            else {
+                const clock = req.body;
                 const query =
                     "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) VALUES ('" + clock.userNumber + "',now(),'" + clock.branchId + "','" + clock.departmentId + "')";
 
+                // Return error or result
                 database.query(query, (err, rows) => {
                     if (err) {
                         const errorObject = {
@@ -69,6 +74,7 @@ module.exports = {
                         };
                         next(errorObject)
                     }
+
                     if (rows) {
                         res.status(200).json({ message: 'User is clocked in.' });
                     }
@@ -80,11 +86,14 @@ module.exports = {
     },
 
     breakHandler: (req, res, next)=>{
-        logger.info("breakHandler was called")
+        logger.info("breakHandler was called.");
 
         const user = req.body;
-        const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;"
+        const breaking = req.body;
+        const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
+        const query2 = "SELECT * FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + breaking.userNumber + ";";
 
+        // Return error or result.
         database.query(query, (err, rows) => {
             if (err) {
                 const errorObject = {
@@ -94,9 +103,7 @@ module.exports = {
                 next(errorObject);
             }
 
-            const breaking = req.body;
-            const query2 = "SELECT * FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + breaking.userNumber + ";";
-
+            // Return error or result.
             database.query(query2, (err, rows2)=>{
                 if (err) {
                     const errorObject = {
@@ -112,6 +119,7 @@ module.exports = {
                     const query =
                         "INSERT INTO `nostradamus`.`break_system` (`userNumber`, `beginTime`) VALUES ('" + breaking.userNumber + "', now());";
 
+                    // Return error or result.
                     database.query(query, (err, rows) =>{
                         if (err){
                             const errorObject = {
@@ -130,6 +138,7 @@ module.exports = {
                     const query =
                         "UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE (`userNumber` = '" + breaking.userNumber + "' AND endTime IS NULL);";
 
+                    // Return error or result
                     database.query(query, (err, rows) =>{
                         if (err){
                             const errorObject = {

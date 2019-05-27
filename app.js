@@ -1,5 +1,8 @@
+// The used libraries from node_modules.
                               require('dotenv').config();
 const express               = require("express");
+
+// The connection with the classes.
 const logger                = require("./src/config/appconfig").logger;
 const authenticationRoutes  = require("./src/routes/authentication.routes");
 const clockRoutes           = require("./src/routes/clock.routes");
@@ -9,34 +12,38 @@ const port  = process.env.PORT || 3000;
 
 app.use(express.json());
 
+// The app's starting point.
 app.all("*", (req, res, next) => {
   const { method, url } = req;
   logger.info(`${method} ${url}`);
   next();
 });
 
+// Looking for comparisons between endpoints in these classes.
 app.use("/api", authenticationRoutes);
 app.use("/api", clockRoutes);
 
+// If endpoint does not exist.
 app.all("*", (req, res, next) => {
   const { method, url } = req;
   const errorMessage = `${method} ${url} does not exist.`;
-
-  logger.warn(errorMessage);
 
   const errorObject = {
     message: errorMessage,
     code: 404,
     date: new Date()
   };
+
   next(errorObject);
 });
 
+// The error handler.
 app.use((error, req, res, next) => {
-  // logger.error("Error handler: ", error.message.toString());
+  logger.error("Error handler: ", error.message.toString());
   res.status(error.code).json(error);
 });
 
+// Standard message when starting the app (npm start).
 app.listen(port, () => logger.info(`The magic happens at port ${port}!`));
 
 module.exports = app;

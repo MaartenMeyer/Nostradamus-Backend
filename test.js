@@ -1,41 +1,36 @@
-// De gedownloade libraries uit node_modules.
+// The used libraries from node_modules.
 const chai      = require('chai');
 const chaiHttp  = require('chai-http');
 const jwt       = require('jsonwebtoken');
 const server    = require('./app.js');
-const assert    = require('assert');
 
 chai.should();
 chai.use(chaiHttp);
 
-const registerApp       ='/api/register';
-const loginApp          ='/api/login';
-const authorization     = 'Authorization';
+// The connection with the authorization.
+const authorization = 'Authorization';
 
 let token;
 
-//Informatie nodig voordat de testen kunnen worden gerund.
+//Information that's requested before running the tests.
 before(() => {
     console.log('before');
 
     const payload = {
-        UserId: 6
+        UserId: 3
     };
 
-    jwt.sign({ data: payload }, 'secretkey', { expiresIn: 60 * 60 * 24 }, (err, result) => {
+    jwt.sign({ data: payload }, 'secretKey', { expiresIn: 60 * 60 * 24 }, (err, result) => {
         if (result) {
             token = result;
         }
     })
 });
 
-beforeEach(() => {
-   console.log('- beforeEach');
-});
-
-// De testen voor de registratie.
+// The tests for registration.
 describe('Register', () => {
-   it('Register a valid user', done => {
+
+    it('Register a valid user.', done => {
        chai.request(server)
            .post('/api/register')
            .set('Content-Type', 'application/json')
@@ -43,21 +38,21 @@ describe('Register', () => {
            .send({
                "firstName": "Rick",
                "lastName": "van Vliet",
-               "userName": "rvvliet3",
+               "userName": "rvvliet10",
                "dateOfBirth": "1999-08-24",
-               "emailAddress": "helloworld3@gmail.com",
+               "emailAddress": "helloworld10@gmail.com",
                "password": "HelloWorld66",
                "accountType": 1,
-               "userNumber": 1256663
+               "userNumber": 12566610
            })
 
-           .end(function (err, res, body) {
-               res.body.should.be.a('object');
+           .end(function (err, res) {
+               res.should.have.status(200);
                done()
            })
    });
 
-    it('Register an  unvalid user', done => {
+    it('Register a not valid user.', done => {
         chai.request(server)
             .post('/api/register')
             .set('Content-Type', 'application/json')
@@ -73,32 +68,33 @@ describe('Register', () => {
                 "userNumber": 976
             })
 
-            .end(function (err, res, body) {
-                res.body.should.be.a('object');
+            .end(function (err, res) {
+                res.should.have.status(500);
                 done()
             })
     })
 });
 
-// De testen voor het inloggen.
+// The tests for login.
 describe('Login', () => {
-   it('Login with a valid user', done => {
+
+    it('Login with a valid user.', done => {
        chai.request(server)
            .post('/api/login')
            .set('Content-Type', 'application/json')
 
            .send( {
-               "userName": "rvvliet3",
+               "userName": "rvvliet6",
                "password": "HelloWorld66"
            })
 
-           .end(function (err, res, body) {
-               res.body.should.be.a('object');
+           .end(function (err, res) {
+               res.should.have.status(200);
                done()
            })
    });
 
-    it('Login with an unvalid user', done => {
+    it('Login with a not valid user.', done => {
         chai.request(server)
             .post('/api/login')
             .set('Content-Type', 'application/json')
@@ -108,59 +104,68 @@ describe('Login', () => {
                 "password": "SecretKey11"
             })
 
-            .end(function (err, res, body) {
-                res.body.should.be.a('object');
+            .end(function (err, res) {
+                res.should.have.status(401);
                 done()
             })
     })
 });
 
-// De testen voor clocking.
+// The tests for the clock system.
 describe('Clocking', () => {
-    it('Clocking with a valid userNumber', done => {
+
+    it('Clocking with a valid userNumber and a valid token.', done => {
         chai.request(server)
             .post('/api/clocking')
-            .set(authorization, 'Bearer ' + token)
-            .send( {
-                "userNumber": 1256663,
+            .set('Content-Type', 'application/json')
+            .set(authorization, 'Bearer ' + '"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXJJZCI6M30sImlhdCI6MTU1ODk2MTY3OCwiZXhwIjoxNTU5MDQ4MDc4fQ.AonC0yNQ2CdvNwnqSb9FVkOQgAXSvNA25dN8bvVljag"')
+
+            .send({
+                "userNumber": 12345,
                 "branchId": 1,
                 "departmentId": 1
             })
-            .end(function (err, res, body) {
-                res.body.should.be.a('object');
-                done()
+
+            .end(function(err, res) {
+                res.should.have.status(200);
+                done();
             })
     });
 
-    it('Clocking with an unvalid userNumber', done => {
+    it('Clocking with a not valid userNumber, but a valid token.', done => {
         chai.request(server)
             .post('/api/clocking')
-            .set(authorization, 'Bearer ' + token)
+            .set('Content-Type', 'application/json')
+            .set(authorization, 'Bearer ' + '"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXJJZCI6M30sImlhdCI6MTU1ODk2MDg4NywiZXhwIjoxNTU5MDQ3Mjg3fQ.UUTqHS_GYdiWkBQXvu-zRQKe37Lss9eBYEUKDeWMAFk"')
+
             .send( {
                 "userNumber": 0,
                 "branchId": 1,
                 "departmentId": 1
             })
 
-            .end(function (err, res, body) {
-                res.body.should.be.a('object');
+            .end(function (err, res) {
+                res.should.have.status(401);
                 done()
             })
     });
 
-    it('clocking with invalid token', done => {
+    it('Clocking with a valid userNumber, but a not valid token.', done => {
         chai.request(server)
             .post('/api/clocking')
-            .set(authorization, 'Bearer ' + '"sdfdxdbxbgsskj-/sfvxdfsbdffghsdfb"')
+            .set('Content-Type', 'application/json')
+            .set(authorization, 'Bearer ' + '"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7IlVzZXJJZCI6M30sImlhdCI6MTU1ODk2MDg4NywiZXhwIjoxNTU5MDQ3Mjg3fQ.UUTqHS_GYdiWkBQXvu-zRQKe37Lss9eBYEUKDeWMAk"')
+
             .send({
-                "userNumber": 14,
-                "branchId": 2,
+                "userNumber": 12345,
+                "branchId": 1,
                 "departmentId": 1
             })
+
             .end(function(err, res) {
-                res.body.should.be.a('object');
+                res.should.have.status(401);
                 done();
             })
-    });
+    })
 });
 
