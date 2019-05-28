@@ -20,6 +20,14 @@ app.all("*", (req, res, next) => {
   next();
 });
 
+// Enable Cross Origin Resource Sharing to let web applications
+// from a different domain access the server
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 // Looking for comparisons between endpoints in these classes.
 app.use("/api", authenticationRoutes);
 app.use("/api", clockRoutes);
