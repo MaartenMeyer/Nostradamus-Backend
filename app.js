@@ -50,7 +50,7 @@ app.all("*", (req, res, next) => {
 // The error handler.
 app.use((error, req, res, next) => {
   logger.error("Error handler: ", error.message.toString());
-  res.status(error.code).json(error);
+  res.status(200).json(error);
 });
 
 // Standard message when starting the app (npm start).

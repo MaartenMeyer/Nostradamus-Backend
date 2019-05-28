@@ -84,7 +84,7 @@ describe('Login', () => {
       .set('Content-Type', 'application/json')
 
       .send( {
-        "userName": "rvvliet12",
+        "userName": "rvvliet13",
         "password": "HelloWorld66"
       })
 

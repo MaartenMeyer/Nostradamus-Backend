@@ -83,9 +83,10 @@ module.exports = {
         logger.info("breakHandler was called.");
 
         const user = req.body;
-        const breaking = req.body;
+
+
         const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
-        const query2 = "SELECT * FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + breaking.userNumber + ";";
+
 
         // Return error or result.
         database.query(query, (err, rows) => {
@@ -96,6 +97,9 @@ module.exports = {
                 };
                 next(errorObject);
             }
+
+            const breaking = req.body;
+            const query2 = "SELECT * FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + breaking.userNumber + ";";
 
             // Return error or result.
             database.query(query2, (err, rows2)=>{
