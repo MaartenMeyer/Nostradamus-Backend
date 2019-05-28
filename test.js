@@ -12,7 +12,7 @@ const authorization = 'Authorization';
 
 let token;
 
-//Informatie nodig voordat de testen kunnen worden gerund.
+//Information needed for the tests
 before(() => {
   console.log('before');
 
@@ -27,13 +27,9 @@ before(() => {
   })
 });
 
-beforeEach(() => {
-  console.log('- beforeEach');
-});
-
-// De testen voor de registratie.
+// The tests for registration.
 describe('Register', () => {
-  it('Register a valid user', done => {
+  it('Register a valid user.', done => {
     chai.request(server)
       .post('/api/register')
       .set('Content-Type', 'application/json')
@@ -41,21 +37,22 @@ describe('Register', () => {
       .send({
         "firstName": "Rick",
         "lastName": "van Vliet",
-        "userName": "rvvliet3",
+        "userName": "rvvliet13",
         "dateOfBirth": "1999-08-24",
-        "emailAddress": "helloworld3@gmail.com",
+        "emailAddress": "helloworld13@gmail.com",
         "password": "HelloWorld66",
         "accountType": 1,
-        "userNumber": 1256663
+        "userNumber": 12566613
       })
 
       .end(function (err, res) {
+        res.should.have.status(200);
         res.body.should.be.a('object');
         done()
       })
   });
 
-  it('Register an invalid user', done => {
+  it('Register a not valid user.', done => {
     chai.request(server)
       .post('/api/register')
       .set('Content-Type', 'application/json')
@@ -72,31 +69,33 @@ describe('Register', () => {
       })
 
       .end(function (err, res) {
+        res.should.have.status(500);
         res.body.should.be.a('object');
         done()
       })
   })
 });
 
-// De testen voor het inloggen.
+// The tests for login.
 describe('Login', () => {
-  it('Login with a valid user', done => {
+  it('Login with a valid user.', done => {
     chai.request(server)
       .post('/api/login')
       .set('Content-Type', 'application/json')
 
       .send( {
-        "userName": "rvvliet3",
+        "userName": "rvvliet12",
         "password": "HelloWorld66"
       })
 
       .end(function (err, res) {
+        res.should.have.status(200);
         res.body.should.be.a('object');
         done()
       })
   });
 
-  it('Login with an unvalid user', done => {
+  it('Login with a not valid user.', done => {
     chai.request(server)
       .post('/api/login')
       .set('Content-Type', 'application/json')
@@ -107,58 +106,66 @@ describe('Login', () => {
       })
 
       .end(function (err, res) {
+        res.should.have.status(401);
         res.body.should.be.a('object');
         done()
       })
   })
 });
 
-// De testen voor clocking.
+// The tests for clocking.
 describe('Clocking', () => {
-  it('Clocking with a valid userNumber', done => {
+  it('Clocking with a valid userNumber.', done => {
     chai.request(server)
       .post('/api/clocking')
       .set(authorization, 'Bearer ' + token)
-      .send( {
+
+        .send( {
         "userNumber": 1256663,
         "branchId": 1,
         "departmentId": 1
       })
+
       .end(function (err, res) {
         res.body.should.be.a('object');
         done()
       })
   });
 
-  it('Clocking with an invalid userNumber', done => {
+  it('Clocking with a not valid userNumber.', done => {
     chai.request(server)
       .post('/api/clocking')
       .set(authorization, 'Bearer ' + token)
-      .send( {
+
+        .send( {
         "userNumber": 0,
         "branchId": 1,
         "departmentId": 1
       })
 
       .end(function (err, res) {
+        res.should.have.status(401);
         res.body.should.be.a('object');
         done()
       })
   });
 
-  it('clocking with invalid token', done => {
+  it('clocking with a not valid token', done => {
     chai.request(server)
       .post('/api/clocking')
       .set(authorization, 'Bearer ' + '"sdfdxdbxbgsskj-/sfvxdfsbdffghsdfb"')
-      .send({
+
+        .send({
         "userNumber": 14,
         "branchId": 2,
         "departmentId": 1
       })
+
       .end(function(err, res) {
+        res.should.have.status(401);
         res.body.should.be.a('object');
         done();
       })
-  });
+  })
 });
 

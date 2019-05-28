@@ -6,17 +6,6 @@ const router                    = express.Router();
 const authenticationController  = require("../controllers/authentication.controller");
 const workcontroller            = require("../controllers/work.controller");
 
-
 router.get("/active", authenticationController.validateToken, workcontroller.activeEmployees);
-
-
-
-
-
-
-
-
-
-
 
 module.exports = router;
