@@ -82,10 +82,10 @@ module.exports = {
     breakHandler: (req, res, next)=>{
         logger.info("breakHandler was called.");
 
-        const user = req.body;
-        const breaking = req.body;
-        const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
-        const query2 = "SELECT * FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + breaking.userNumber + ";";
+        const user      = req.body;
+        const breaking  = req.body;
+        const query     = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
+        const query2    = "SELECT * FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + breaking.userNumber + ";";
 
         // Return error or result.
         database.query(query, (err, rows) => {
@@ -124,9 +124,13 @@ module.exports = {
                         }
                         res.status(200).json({ message: 'User break clocked in.' })
                     })
-                } else if (rows.length === 0) {
+                }
+
+                else if (rows.length === 0) {
                     res.status(500).json({ message: 'User is not clocked in yet.' })
-                } else {
+                }
+
+                else {
                     const breaking = req.body;
 
                     const query =
@@ -141,6 +145,7 @@ module.exports = {
                             };
                             next(errorObject)
                         }
+
                         res.status(200).json({ message: 'User break clocked off.' })
                     })
                 }

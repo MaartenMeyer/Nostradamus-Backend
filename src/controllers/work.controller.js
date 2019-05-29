@@ -20,8 +20,10 @@ module.exports = {
 
             else {
                 if (rows.length === 0){
-                    res.status(200).json({ message: 'No employees are working right now'})
-                } else {
+                    res.status(200).json({ message: 'No employees are working right now!'})
+                }
+
+                else {
                     res.status(200).json(rows)
                 }
 

@@ -17,7 +17,7 @@ before(() => {
   console.log('before');
 
   const payload = {
-    UserId: 6
+    UserId: 3
   };
 
   jwt.sign({ data: payload }, 'secretkey', { expiresIn: 60 * 60 * 24 }, (err, result) => {
@@ -37,12 +37,12 @@ describe('Register', () => {
       .send({
         "firstName": "Rick",
         "lastName": "van Vliet",
-        "userName": "rvvliet13",
+        "userName": "rvvliet25",
         "dateOfBirth": "1999-08-24",
-        "emailAddress": "helloworld13@gmail.com",
+        "emailAddress": "helloworld25@gmail.com",
         "password": "HelloWorld66",
         "accountType": 1,
-        "userNumber": 12566613
+        "userNumber": 12566625
       })
 
       .end(function (err, res) {
@@ -84,8 +84,8 @@ describe('Login', () => {
       .set('Content-Type', 'application/json')
 
       .send( {
-        "userName": "rvvliet12",
-        "password": "HelloWorld66"
+        "userName": "SteveJobs1",
+        "password": "secret"
       })
 
       .end(function (err, res) {
@@ -168,4 +168,57 @@ describe('Clocking', () => {
       })
   })
 });
+
+// The tests for breaking
+describe('Breaking', () => {
+   it('Breaking with a valid userNumber.', done => {
+       chai.request(server)
+           .post('/api/breaking')
+           .set(authorization, 'Bearer ' + token)
+
+           .send({
+               "userNumber": 12566624
+           })
+
+
+           .end(function (err, res) {
+               res.body.should.be.a('object');
+               done()
+           })
+   });
+
+    it('Breaking with a not valid userNumber.', done => {
+        chai.request(server)
+            .post('/api/breaking')
+            .set(authorization, 'Bearer ' + token)
+
+            .send( {
+                "userNumber": 0
+            })
+
+            .end(function (err, res) {
+                res.should.have.status(401);
+                res.body.should.be.a('object');
+                done()
+            })
+    });
+
+    it('Breaking with a not valid token.', done => {
+        chai.request(server)
+            .post('/api/breaking')
+            .set(authorization, 'Bearer ' + '"durhfrnecbrufbreu43"')
+
+            .send({
+                "userNumber": 12345
+            })
+
+            .end(function (err, res) {
+                res.should.have.status(401);
+                res.body.should.be.a('object');
+                done()
+            })
+    });
+});
+
+
 

@@ -87,11 +87,14 @@ module.exports = {
             rows.length === 1 && bcrypt.compareSync(req.body.password, rows[0].password)
         ) {
 
+          logger.info(rows);
           logger.info("Password match, user logged id.");
 
           const payload = {
-            UserId: rows[0].UserId
+            UserId: rows[0].UserId,
           };
+
+          logger.info(payload);
 
           jwt.sign(
             { data: payload },
