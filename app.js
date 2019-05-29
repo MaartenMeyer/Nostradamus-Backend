@@ -7,6 +7,7 @@ const logger                = require("./src/config/appconfig").logger;
 const authenticationRoutes  = require("./src/routes/authentication.routes");
 const clockRoutes           = require("./src/routes/clock.routes");
 const workRoutes            = require("./src/routes/work.routes");
+const dataRoutes            = require("./src/routes/data.routes");
 
 const app   = express();
 const port  = process.env.PORT || 3000;
@@ -30,6 +31,7 @@ app.use(function(req, res, next) {
 app.use("/api", authenticationRoutes);
 app.use("/api", clockRoutes);
 app.use("/api", workRoutes);
+app.use("/api", dataRoutes);
 
 // If endpoint does not exist.
 app.all("*", (req, res, next) => {
