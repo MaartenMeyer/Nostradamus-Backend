@@ -4,8 +4,8 @@ const database = require("../datalayer/mysql.dao");
 
 module.exports = {
     // Function to get all departments of the company of the given user id
-    getDepartmentsOfCompany: (req, res, next) => {
-        logger.info('getUserData is called')
+    getDataOfUser: (req, res, next) => {
+        logger.info('getDataOfUser is called')
         const id = req.params.userId;
 
         const query = `SELECT b.branchId, b.branchName, d.departmentId, d.departmentName FROM nostradamus.department d
@@ -23,7 +23,7 @@ module.exports = {
         database.query(query, (err, rows) => {
             if (err) {
                 const errorObject = {
-                    message: 'Something went wrong in the database.',
+                    message: 'Something went wrong with the database.',
                     code: 500
                 }
                 next(errorObject);
