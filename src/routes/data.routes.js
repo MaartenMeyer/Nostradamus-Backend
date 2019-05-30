@@ -6,6 +6,6 @@ const router                    = express.Router();
 const authenticationController  = require("../controllers/authentication.controller");
 const dataController            = require("../controllers/data.controller");
 
-router.get("/:userId/data/", authenticationController.validateToken, dataController.getUserData);
+router.get("/:userId/departments/", authenticationController.validateToken, dataController.getDepartmentsOfCompany);
 
 module.exports = router;
