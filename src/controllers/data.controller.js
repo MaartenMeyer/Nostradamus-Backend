@@ -8,7 +8,7 @@ module.exports = {
         logger.info('getUserData is called')
         const id = req.params.userId;
 
-        const query = `SELECT d.departmentId, d.departmentName FROM nostradamus.department d
+        const query = `SELECT b.branchId, b.branchName, d.departmentId, d.departmentName FROM nostradamus.department d
                             INNER JOIN nostradamus.branch_department bd ON d.departmentId = bd.departmentId
                             INNER JOIN nostradamus.branch b ON bd.branchId = b.branchId
                             INNER JOIN nostradamus.company_branch cb ON b.branchId = cb.branchId
@@ -30,7 +30,7 @@ module.exports = {
             }
             if (rows) {
                 if (rows.length > 0) {
-                    res.status(200).json({ result: rows })
+                    res.status(200).json(rows)
                 } else {
                     const errorObject = {
                         message: 'UserId not found.',
