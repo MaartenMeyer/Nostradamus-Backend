@@ -7,7 +7,9 @@ module.exports = {
         logger.info('getUserData is called')
         const id = req.params.userId;
 
-        const query = `SELECT * FROM nostradamus.user_company WHERE userId=${id};`
+        const query = `SELECT c.companyId, c.companyName, uc.userId, u.firstName FROM nostradamus.company c
+        INNER JOIN nostradamus.user_company uc ON c.companyId = uc.companyId
+        INNER JOIN nostradamus.user u ON uc.userId = u.UserId WHERE u.UserId=${id};`
 
         database.query(query, (err, rows) => {
             if (err) {
