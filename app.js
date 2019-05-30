@@ -33,6 +33,8 @@ app.use("/api", clockRoutes);
 app.use("/api", workRoutes);
 app.use("/api", dataRoutes);
 
+
+
 // If endpoint does not exist.
 app.all("*", (req, res, next) => {
   const { method, url } = req;
