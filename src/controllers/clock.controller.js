@@ -3,7 +3,7 @@ const logger        = require("../config/appconfig").logger;
 const database      = require("../datalayer/mysql.dao");
 
 module.exports = {
-    clockHandler: (req,res,next)=>{
+  clockHandler: (req,res,next)=>{
         logger.info("clockHandler was called.");
         const user = req.body;
 
@@ -79,7 +79,7 @@ module.exports = {
 
     },
 
-    breakHandler: (req, res, next)=>{
+  breakHandler: (req, res, next)=>{
         logger.info("breakHandler was called.");
 
         const user      = req.body;
@@ -151,5 +151,26 @@ module.exports = {
                 }
             });
         });
-    }
+    },
+
+  hoursHandeler: (req,res,next) => {
+    logger.info("hoursHandeler is called.");
+    const user = req.body;
+
+    const query = "SELECT userNumber, beginTime, endTime FROM nostradamus.clocking_system where userNumber = " + user.userNumber + ";";
+
+    // Returns error or result.
+    database.query(query, (err, rows)=>{
+      if (err) {
+        const errorObject = {
+          message: 'Something went wrong in the database.',
+          code: 500
+        };
+        next(errorObject)
+      }
+      if (rows){
+        res.status(200).json({ result: rows})
+      }
+    })
+  },
 };
