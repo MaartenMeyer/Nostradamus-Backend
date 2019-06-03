@@ -111,7 +111,7 @@ module.exports = {
                     res.status(200).json(company)
                 } else {
                     const errorObject = {
-                        message: 'UserId not found.',
+                        message: 'Error retrieving data: check if database contains departments and branches.',
                         code: 404
                     }
                     next(errorObject);
