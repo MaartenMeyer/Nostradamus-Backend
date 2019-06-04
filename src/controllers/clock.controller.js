@@ -7,144 +7,103 @@ module.exports = {
         logger.info("clockHandler was called.");
         const user = req.body;
 
-        // Checks if request body contains startTime and endTime
-        if(user.startTime == null && user.endTime == null){
-            // If there is still a pause clocked in, it is now clocked out
-            const query2 = "SELECT 1 FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + user.userNumber + ";";
+        // If there is still a pause clocked in, it is now clocked out
+        const query2 = "SELECT 1 FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + user.userNumber + ";";
 
-            database.query(query2, (err, rows)=>{
-                if (rows.length > 0){
-                    const query3 = "UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
+        database.query(query2, (err, rows)=>{
+            if (rows.length > 0){
 
-                    database.query(query3, (err, rows)=>{
-                    logger.info("USER ALSO BREAK CLOCKED OFF");
-                    });
-                }
-            });
+                let query = "";
 
-            // select 1 is for faster query searching
-            const clock = req.body;
-
-            const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
-
-            // Return error or result.
-            database.query(query, (err, rows) => {
-                if (err) {
-                    const errorObject = {
-                        message: 'Something went wrong in the database.',
-                        code: 500
-                    };
-                    next(errorObject)
+                // Checks if request body contains startTime and endTime
+                // If only endtime given: set endTime of break to the same endTime
+                // Else: updates break to set endTime to now()
+                if(user.startTime == null && user.endTime != null){
+                    query = "UPDATE `nostradamus`.`break_system` SET `endTime` = '" + user.endTime + "' WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
+                } else {
+                    query = "UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
                 }
 
-                if (rows.length > 0) {
-                    const query = "UPDATE `nostradamus`.`clocking_system` SET `endTime` = now() WHERE (endTime IS null AND userNumber = " + clock.userNumber + ");";
+                database.query(query, (err, rows)=>{
+                logger.info("USER ALSO BREAK CLOCKED OFF");
+                });
+            }
+        });
 
-                    // Return error or result.
-                    database.query(query, (err, rows) => {
-                        if (err) {
-                            const errorObject = {
-                                message: 'Something went wrong in the database.',
-                                code: 500
-                            };
-                            next(errorObject)
-                        }
+        // select 1 is for faster query searching
+        const clock = req.body;
 
-                        if (rows) {
-                            res.status(200).json({ message: 'User is clocked off.' });
-                        }
-                    });
-                }else {
-                    const clock = req.body;
-                    const query = "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) VALUES ('" + clock.userNumber + "',now(),'" + clock.branchId + "','" + clock.departmentId + "')";
+        const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
 
-                    // Return error or result
-                    database.query(query, (err, rows) => {
-                        if (err) {
-                            const errorObject = {
-                                message: 'Something went wrong in the database.',
-                                code: 500
-                            };
-                            next(errorObject);
-                        }
+        // Return error or result.
+        database.query(query, (err, rows) => {
+            if (err) {
+                const errorObject = {
+                    message: 'Error in database at SELECT 1 FROM nostradamus.clocking_system',
+                    code: 500
+                };
+                next(errorObject);
+            }
 
-                        if (rows) {
-                            res.status(200).json({ message: 'User is clocked in.' });
-                        }
-                    });
-                }
-            });
-        }else if(user.startTime != null && user.endTime == null){
-            // If there is still a pause clocked in, it is now clocked out
-            const query2 = "SELECT 1 FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + user.userNumber + ";";
+            if (rows.length > 0) {
 
-            database.query(query2, (err, rows)=>{
-                if (rows.length > 0){
-                    const query3 = "UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
+                let query = "";
 
-                    database.query(query3, (err, rows)=>{
-                    logger.info("USER ALSO BREAK CLOCKED OFF");
-                    });
-                }
-            });
-
-            // select 1 is for faster query searching
-            const clock = req.body;
-
-            const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
-
-            // Return error or result.
-            database.query(query, (err, rows) => {
-                if (err) {
-                    const errorObject = {
-                        message: 'Something went wrong in the database.',
-                        code: 500
-                    };
-                    next(errorObject)
+                // Checks if request body contains startTime and endTime
+                // If only endtime given: set endTime of clocking entry to the same endTime
+                // Else: update clocking record to set endTime to now()
+                if (user.startTime == null && user.endTime != null) {
+                    query = "UPDATE `nostradamus`.`clocking_system` SET `endTime` = '" + user.endTime + "' WHERE (endTime IS null AND userNumber = " + clock.userNumber + ");";
+                } else {
+                    query = "UPDATE `nostradamus`.`clocking_system` SET `endTime` = now() WHERE (endTime IS null AND userNumber = " + clock.userNumber + ");";
                 }
 
-                if (rows.length > 0) {
-                    const query = "UPDATE `nostradamus`.`clocking_system` SET `endTime` = now() WHERE (endTime IS null AND userNumber = " + clock.userNumber + ");";
+                // Return error or result.
+                database.query(query, (err, rows) => {
+                    if (err) {
+                        const errorObject = {
+                            message: 'Error in database at UPDATE nostradamus.clocking_system',
+                            code: 500
+                        };
+                        next(errorObject);
+                    }
 
-                    // Return error or result.
-                    database.query(query, (err, rows) => {
-                        if (err) {
-                            const errorObject = {
-                                message: 'Something went wrong in the database.',
-                                code: 500
-                            };
-                            next(errorObject)
-                        }
+                    if (rows) {
+                        res.status(200).json({ message: 'User is clocked off.' });
+                    }
+                });
+            }else {
 
-                        if (rows) {
-                            res.status(200).json({ message: 'User is clocked off.' });
-                        }
-                    });
-                }else {
-                    const clock = req.body;
-                    const query = "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) VALUES ('" + clock.userNumber + "','" + clock.startTime + "','" + clock.branchId + "','" + clock.departmentId + "')";
+                let query = "";
 
-                    // Return error or result
-                    database.query(query, (err, rows) => {
-                        if (err) {
-                            const errorObject = {
-                                message: 'Something went wrong in the database.',
-                                code: 500
-                            };
-                            next(errorObject);
-                        }
-
-                        if (rows) {
-                            res.status(200).json({ message: 'User is clocked in.' });
-                        }
-                    });
+                // Checks if request body contains startTime and endTime
+                // If both startTime and endTime given: insert new record with given startTime and endTime
+                // If only startTime given: insert new record with given startTime
+                // Else: insert new record with startTime set to now()
+                if (user.startTime != null && user.endTime != null) {
+                    query = "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, endTime, branchId, departmentId) VALUES ('" + user.userNumber + "','" + user.startTime + "','" + user.endTime +"','" + user.branchId + "','" + user.departmentId + "')";
+                } else if (user.startTime != null && user.endTime == null) {
+                    query = "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) VALUES ('" + user.userNumber + "','" + user.startTime + "','" + user.branchId + "','" + user.departmentId + "')";
+                } else {
+                    query = "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) VALUES ('" + clock.userNumber + "',now(),'" + clock.branchId + "','" + clock.departmentId + "')";
                 }
-            });
-        }else if(user.startTime == null && user.endTime == null){
 
-        }else if(user.startTime != null && user.endTime != null){
+                // Return error or result
+                database.query(query, (err, rows) => {
+                    if (err) {
+                        const errorObject = {
+                            message: 'Error in database at INSERT INTO nostradamus.clocking_system',
+                            code: 500
+                        };
+                        next(errorObject);
+                    }
 
-        }
+                    if (rows) {
+                        res.status(200).json({ message: 'User is clocked in.' });
+                    }
+                });
+            }
+        });
     },
 
   breakHandler: (req, res, next)=>{
