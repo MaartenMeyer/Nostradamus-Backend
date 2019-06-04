@@ -7,76 +7,80 @@ module.exports = {
         logger.info("clockHandler was called.");
         const user = req.body;
 
-        // If there is still a pause clocked in, is is now clocked out
-        const query2 = "SELECT 1 FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + user.userNumber + ";";
+        // Checks if request body contains startTime and endTime
+        if(user.startTime == null && user.endTime == null){
+            // If there is still a pause clocked in, is is now clocked out
+            const query2 = "SELECT 1 FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + user.userNumber + ";";
 
-        database.query(query2, (err, rows)=>{
-            if (rows.length > 0){
-                const query3 = "UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
+            database.query(query2, (err, rows)=>{
+                if (rows.length > 0){
+                    const query3 = "UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
 
-                database.query(query3, (err, rows)=>{
-                    logger.info("USER ALSO BREAK CLOCKED OFF")
-                })
-            }
-        });
+                    database.query(query3, (err, rows)=>{
+                    logger.info("USER ALSO BREAK CLOCKED OFF");
+                    });
+                }
+            });
 
-        // select 1 is for faster query searching
-        const clock = req.body;
+            // select 1 is for faster query searching
+            const clock = req.body;
 
-        const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
+            const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
 
-        // Return error or result.
-        database.query(query, (err, rows) => {
-            if (err) {
-                const errorObject = {
-                    message: 'Something went wrong in the database.',
-                    code: 500
-                };
-                next(errorObject)
-            }
+            // Return error or result.
+            database.query(query, (err, rows) => {
+                if (err) {
+                    const errorObject = {
+                        message: 'Something went wrong in the database.',
+                        code: 500
+                    };
+                    next(errorObject)
+                }
 
-            if (rows.length > 0) {
-                const query = "UPDATE `nostradamus`.`clocking_system` SET `endTime` = now() WHERE (endTime IS null AND userNumber = " + clock.userNumber + ");";
+                if (rows.length > 0) {
+                    const query = "UPDATE `nostradamus`.`clocking_system` SET `endTime` = now() WHERE (endTime IS null AND userNumber = " + clock.userNumber + ");";
 
-                // Return error or result.
-                database.query(query, (err, rows) => {
-                    if (err) {
-                        const errorObject = {
-                            message: 'Something went wrong in the database.',
-                            code: 500
-                        };
-                        next(errorObject)
-                    }
+                    // Return error or result.
+                    database.query(query, (err, rows) => {
+                        if (err) {
+                            const errorObject = {
+                                message: 'Something went wrong in the database.',
+                                code: 500
+                            };
+                            next(errorObject)
+                        }
 
-                    if (rows) {
-                        res.status(200).json({ message: 'User is clocked off.' });
-                    }
-                })
-            }
+                        if (rows) {
+                            res.status(200).json({ message: 'User is clocked off.' });
+                        }
+                    });
+                }else {
+                    const clock = req.body;
+                    const query = "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) VALUES ('" + clock.userNumber + "',now(),'" + clock.branchId + "','" + clock.departmentId + "')";
 
-            else {
-                const clock = req.body;
-                const query =
-                    "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) VALUES ('" + clock.userNumber + "',now(),'" + clock.branchId + "','" + clock.departmentId + "')";
+                    // Return error or result
+                    database.query(query, (err, rows) => {
+                        if (err) {
+                            const errorObject = {
+                                message: 'Something went wrong in the database.',
+                                code: 500
+                            };
+                            next(errorObject);
+                        }
 
-                // Return error or result
-                database.query(query, (err, rows) => {
-                    if (err) {
-                        const errorObject = {
-                            message: 'Something went wrong in the database.',
-                            code: 500
-                        };
-                        next(errorObject)
-                    }
+                        if (rows) {
+                            res.status(200).json({ message: 'User is clocked in.' });
+                        }
+                    });
+                }
+            });
+        }else if(user.startTime != null && user.endTime == null){
 
-                    if (rows) {
-                        res.status(200).json({ message: 'User is clocked in.' });
-                    }
-                });
-            }
-        })
+        }else if(user.startTime == null && user.endTime == null){
 
+        }else if(user.startTime != null && user.endTime != null){
 
+        }
     },
 
   breakHandler: (req, res, next)=>{
