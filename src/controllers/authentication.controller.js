@@ -92,6 +92,7 @@ module.exports = {
 
           const payload = {
             UserId: rows[0].UserId,
+            UserName: user.userName,
           };
 
           logger.info(payload);
@@ -158,8 +159,9 @@ module.exports = {
 
       logger.trace("payload", payload);
 
-      if (payload.data && payload.data.UserId) {
+      if (payload.data && payload.data.UserId && payload.data.UserName) {
         req.userId = payload.data.UserId;
+        req.userName = payload.data.UserName;
         next();
       }
 
