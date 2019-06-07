@@ -119,4 +119,10 @@ module.exports = {
             }
         })
     },
+
+    getServerStatus: (req, res, next) => {
+        res.status(200).json({
+            status: "Online"
+        });
+    }
 };
