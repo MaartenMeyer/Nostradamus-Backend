@@ -106,7 +106,49 @@ module.exports = {
         });
     },
 
-  breakHandler: (req, res, next)=>{
+    // Returns clocking_system object if a row is found in database with the given userNumber and with endTime NULL
+    // Else: returns 404 status
+    // If userNumber is not found, returns 500 status
+    clockStatus: (req, res, next) =>{
+        logger.info("clockStatus was called.");
+        const userNumber = req.params.userNumber;
+
+        const query = "SELECT * FROM nostradamus.clocking_system WHERE userNumber = " + userNumber + " AND endTime IS NULL;";
+
+        database.query(query, (err, rows) => {
+            if (err) {
+                const errorObject = {
+                    message: 'Error in database at SELECT 1 FROM nostradamus.clocking_system',
+                    code: 500
+                };
+                next(errorObject);
+            }
+
+            if (rows.length > 0) {
+
+                let clockingEntry = {
+                    clockingSystemId: "",
+                    userNumber: "",
+                    beginTime: "",
+                    endTime: "",
+                    branchId: "",
+                    departmentId: ""
+                };
+                clockingEntry.clockingSystemId = rows[0].clockingSystemId;
+                clockingEntry.userNumber = rows[0].userNumber;
+                clockingEntry.beginTime = rows[0].beginTime;
+                clockingEntry.endTime = rows[0].endTime;
+                clockingEntry.branchId = rows[0].branchId;
+                clockingEntry.departmentId = rows[0].departmentId;
+
+                res.status(200).json(clockingEntry);
+            } else {
+                res.status(404).json({ message: 'No clocking entries found with endTime NULL.' });
+            }
+        });
+    },
+
+    breakHandler: (req, res, next)=>{
         logger.info("breakHandler was called.");
 
         const user      = req.body;

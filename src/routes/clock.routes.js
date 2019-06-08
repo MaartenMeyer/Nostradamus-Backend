@@ -7,6 +7,7 @@ const authenticationController  = require("../controllers/authentication.control
 const clockController           = require("../controllers/clock.controller");
 
 router.post("/clocking", authenticationController.validateToken, clockController.clockHandler);
+router.get("/clockingstatus/:userNumber", clockController.clockStatus);
 router.post("/breaking", authenticationController.validateToken, clockController.breakHandler);
 router.get("/hours", clockController.hoursHandeler);
 
