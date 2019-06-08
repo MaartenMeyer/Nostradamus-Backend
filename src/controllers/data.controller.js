@@ -120,6 +120,59 @@ module.exports = {
         })
     },
 
+    getUsersOfCompany: (req, res, next) => {
+        logger.info('getUsersOfCompany is called')
+        const id = req.params.companyId;
+
+        const query = `SELECT u.UserId, u.userNumber FROM nostradamus.user u
+                            INNER JOIN nostradamus.user_company uc ON u.UserId = uc.userId
+                            INNER JOIN nostradamus.company c ON uc.companyId = c.companyId
+                            WHERE c.companyId IN
+                                    (SELECT c.companyId FROM nostradamus.company c
+                                        INNER JOIN nostradamus.user_company uc ON c.companyId = uc.companyId
+                                        INNER JOIN nostradamus.user u ON uc.userId = u.UserId
+                                        WHERE u.UserId=${id}
+                                    );`
+
+        database.query(query, (err, rows) => {
+            if (err) {
+                const errorObject = {
+                    message: 'Something went wrong with the database.',
+                    code: 500
+                }
+                next(errorObject);
+            }
+            if (rows) {
+                if (rows.length > 0) {
+
+                    let users = {
+                        users: []
+                    };
+
+                    // Loops through all elements of Array rows
+                    for (let i = 0; i < rows.length; i++) {
+
+                        let user = {
+                            userId: "",
+                            userNumber: ""
+                        };
+                        user.userId = rows[i].UserId;
+                        user.userNumber = rows[i].userNumber;
+
+                        users.users.push(user);
+                    }
+                    res.status(200).json(users);
+                } else {
+                    const errorObject = {
+                        message: 'Error retrieving data: check if database contains users.',
+                        code: 404
+                    }
+                    next(errorObject);
+                }
+            }
+        })
+    },
+
     getServerStatus: (req, res, next) => {
         res.status(200).json({
             status: "Online"
