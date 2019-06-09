@@ -280,9 +280,9 @@ CREATE TABLE `user` (
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 INSERT INTO `user` VALUES 
-(1,'Ad','Admin','admin','2019-01-01','ad@admin.com','$2a$10$9go39XbmThH9W91ohvxnZeT0k3Mz4H.6KH0W/VmtEzuKSasrA1XRG',1,1);
---(2,'Max','Manager','manager','2019-01-01','max@manager.com','$2a$10$9go39XbmThH9W91ohvxnZeT0k3Mz4H.6KH0W/VmtEzuKSasrA1XRG',2,2),
---(2,'Max','Manager','manager','2019-01-01','max@manager.com','$2a$10$9go39XbmThH9W91ohvxnZeT0k3Mz4H.6KH0W/VmtEzuKSasrA1XRG',2,2);
+(1,'Ad','Admin','admin','2019-01-01','ad@admin.com','$2a$10$9go39XbmThH9W91ohvxnZeT0k3Mz4H.6KH0W/VmtEzuKSasrA1XRG',1,1),
+(2,'Max','Manager','manager','2019-01-02','max@manager.com','$2a$10$Qmu6Bt6c0e2ZOovFmMgA5.7V0QMxdGW30KSsWQIDsfL73IPty8Pqe',2,2),
+(3,'Els','Employee','employee','2019-01-03','els@employee.com','$2a$10$3dBnen4VSSgUI6hgem29luRoNfBhcyaV91gKlvy.v2EoBnUrDkc0i',3,3);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -312,7 +312,7 @@ CREATE TABLE `user_company` (
 
 LOCK TABLES `user_company` WRITE;
 /*!40000 ALTER TABLE `user_company` DISABLE KEYS */;
-INSERT INTO `user_company` VALUES (1,1,1),(2,2,1);
+INSERT INTO `user_company` VALUES (1,1,1),(2,2,1),(3,3,1);
 /*!40000 ALTER TABLE `user_company` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
