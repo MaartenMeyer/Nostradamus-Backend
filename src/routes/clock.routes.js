@@ -9,7 +9,7 @@ const clockController           = require("../controllers/clock.controller");
 router.post("/clocking", authenticationController.validateToken, clockController.clockHandler);
 router.get("/clockingstatus/:userNumber", clockController.clockStatus);
 router.post("/breaking", authenticationController.validateToken, clockController.breakHandler);
-router.get("/breakstatus/:userNumber", clockController.breakStatus);
+router.get("/breakStatus/:userNumber", clockController.breakStatus);
 router.get("/hours", clockController.hoursHandeler);
 
 module.exports = router;
