@@ -222,6 +222,42 @@ module.exports = {
         });
     },
 
+    // Returns breaking_system object if a row is found in database with the given userNumber and with endTime NULL
+    // Else: returns 404 status
+    // If userNumber is not found, returns 500 status
+    breakStatus: (req, res, next) => {
+        logger.info("breakStatus was called.");
+        const userNumber = req.params.userNumber;
+
+        const query = "SELECT * FROM nostradamus.break_system WHERE userNumber = " + userNumber + " AND endTime IS NULL;";
+
+        database.query(query, (err, rows) => {
+            if (err) {
+                const errorObject = {
+                    message: 'Error in database at SELECT 1 FROM nostradamus.break_system',
+                    code: 500
+                };
+                next(errorObject);
+            }
+
+            if (rows.length > 0) {
+
+                let breakEntry = {
+                    breakSystemId: "",
+                    beginTime: "",
+                    endTime: ""
+                };
+				breakEntry.breakSystemId = rows[0].break_systemId;
+				breakEntry.beginTime = rows[0].beginTime;
+				breakEntry.endTime = rows[0].endTime;
+
+                res.status(200).json(breakEntry);
+            } else {
+                res.status(404).json({ message: 'No break entries found with endTime NULL and userNumber ' + userNumber });
+            }
+        });
+    },
+
   hoursHandeler: (req,res,next) => {
     logger.info("hoursHandeler is called.");
     const user = req.body;
