@@ -18,7 +18,7 @@ module.exports = {
                 // Checks if request body contains startTime and endTime
                 // If only endtime given: set endTime of break to the same endTime
                 // Else: updates break to set endTime to now()
-                if(user.startTime == null && user.endTime != null){
+                if(user.beginTime == null && user.endTime != null){
                     query = "UPDATE `nostradamus`.`break_system` SET `endTime` = '" + user.endTime + "' WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
                 } else {
                     query = "UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
@@ -52,7 +52,7 @@ module.exports = {
                 // Checks if request body contains startTime and endTime
                 // If only endtime given: set endTime of clocking entry to the same endTime
                 // Else: update clocking record to set endTime to now()
-                if (user.startTime == null && user.endTime != null) {
+                if (user.beginTime == null && user.endTime != null) {
                     query = "UPDATE `nostradamus`.`clocking_system` SET `endTime` = '" + user.endTime + "' WHERE (endTime IS null AND userNumber = " + clock.userNumber + ");";
                 } else {
                     query = "UPDATE `nostradamus`.`clocking_system` SET `endTime` = now() WHERE (endTime IS null AND userNumber = " + clock.userNumber + ");";
@@ -80,10 +80,11 @@ module.exports = {
                 // If both startTime and endTime given: insert new record with given startTime and endTime
                 // If only startTime given: insert new record with given startTime
                 // Else: insert new record with startTime set to now()
-                if (user.startTime != null && user.endTime != null) {
-                    query = "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, endTime, branchId, departmentId) VALUES ('" + user.userNumber + "','" + user.startTime + "','" + user.endTime +"','" + user.branchId + "','" + user.departmentId + "')";
-                } else if (user.startTime != null && user.endTime == null) {
-                    query = "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) VALUES ('" + user.userNumber + "','" + user.startTime + "','" + user.branchId + "','" + user.departmentId + "')";
+                console.log("Synchronize clockEntry: " +user.body);
+                if (user.beginTime != null && user.endTime != null) {
+                    query = "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, endTime, branchId, departmentId) VALUES ('" + user.userNumber + "','" + user.beginTime + "','" + user.endTime +"','" + user.branchId + "','" + user.departmentId + "')";
+                } else if (user.beginTime != null && user.endTime == null) {
+                    query = "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) VALUES ('" + user.userNumber + "','" + user.beginTime + "','" + user.branchId + "','" + user.departmentId + "')";
                 } else {
                     query = "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) VALUES ('" + clock.userNumber + "',now(),'" + clock.branchId + "','" + clock.departmentId + "')";
                 }
