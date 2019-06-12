@@ -177,5 +177,63 @@ module.exports = {
         res.status(200).json({
             status: "Online"
         });
+    },
+
+    // Getting all user information for the overview page.
+    getUserOverview: (req, res, next) => {
+        logger.info('getUserOverview is called');
+        const userNumber = req.params.userNumber;
+
+        const query = `SELECT u.userNumber, u.lastName, cs.beginTime, cs.endTime, bs.beginTime AS beginBreak, bs.endTime AS endBreak FROM nostradamus.clocking_system cs
+                            INNER JOIN nostradamus.user u ON cs.userNumber = u.userNumber
+                            INNER JOIN nostradamus.break_system bs ON cs.userNumber = bs.userNumber
+                            WHERE u.userNumber = ${userNumber};`;
+
+        database.query(query, (err, rows) => {
+            if (err) {
+                const errorObject = {
+                    message: 'Something went wrong with the database.',
+                    code: 500
+                };
+                next(errorObject);
+            }
+            if (rows) {
+                if (rows.length > 0) {
+
+                    let user = {
+                        userNumber: "",
+                        lastName: "",
+                        clockEntries: []
+                    };
+                    user.userNumber = rows[0].userNumber;
+                    user.lastName = rows[0].lastName;
+
+                    for(let i = 0; i < rows.length; i++){
+
+                        let clock = {
+                            beginTime: "",
+                            endTime: "",
+                            // beginBreak: "",
+                            // endBreak: ""
+                        };
+
+                        clock.beginTime = rows[i].beginTime;
+                        clock.endTime = rows[i].endTime;
+                        // clock.beginBreak = rows[i].beginBreak;
+                        // clock.endBreak = rows[i].endTime;
+
+                        user.clockEntries.push(clock);
+                    }
+
+                    res.status(200).json(user);
+                } else {
+                    const errorObject = {
+                        message: 'Error retrieving data: check if database contains users.',
+                        code: 404
+                    };
+                    next(errorObject);
+                }
+            }
+        })
     }
 };

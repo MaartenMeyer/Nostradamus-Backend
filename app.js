@@ -57,6 +57,6 @@ app.use((error, req, res, next) => {
 });
 
 // Standard message when starting the app (npm start).
-app.listen(port, () => logger.info(`Welcome to the app, use port ${port} for access.`));
+app.listen(port, '0.0.0.0', () => logger.info(`Welcome to the app, use port ${port} for access.`));
 
 module.exports = app;
