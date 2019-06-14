@@ -153,22 +153,61 @@ module.exports = {
         logger.info("breakHandler was called.");
 
         const user      = req.body;
-        const breaking  = req.body;
-        const query     = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
-        const query2    = "SELECT * FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + breaking.userNumber + ";";
 
-        // Return error or result.
-        database.query(query, (err, rows) => {
-            if (err) {
-                const errorObject = {
-                    message: "Something went wrong with the database.",
-                    code: 500
-                };
-                next(errorObject);
-            }
+        console.log(user);
+
+        let queryOfflineSync = "";
+        if(user.beginTime != null && user.endTime == null){
+            queryOfflineSync = "INSERT INTO `nostradamus`.`break_system` (`userNumber`, `beginTime`) VALUES ('" + user.userNumber + "','" + user.beginTime + "')";
+            // Return error or result.
+            database.query(queryOfflineSync, (err, rows) => {
+                if (err) {
+                    const errorObject = {
+                        message: "Error at: INSERT INTO `nostradamus`.`break_system` (`userNumber`, `beginTime`) VALUES.",
+                        code: 500
+                    };
+                    next(errorObject)
+                }
+                res.status(200).json({ message: 'User break clocked in.' })
+            })
+        }else if(user.beginTime != null && user.endTime != null){
+            queryOfflineSync = "INSERT INTO `nostradamus`.`break_system` (`userNumber`, `beginTime`, `endTime`) VALUES ('" + user.userNumber + "','" + user.beginTime + "','" + user.endTime + "')";
+            // Return error or result
+            database.query(queryOfflineSync, (err, rows) => {
+                if (err) {
+                    const errorObject = {
+                        message: 'Error at: INSERT INTO `nostradamus`.`break_system` (`userNumber`, `beginTime`, `endTime`) VALUES.',
+                        code: 500
+                    };
+                    next(errorObject);
+                }
+
+                if (rows) {
+                    res.status(200).json({ message: 'User is clocked in.' });
+                }
+            });
+        }else if(user.beginTime == null && user.endTime != null){
+            queryOfflineSync = "UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE (`userNumber` = '" + user.userNumber + "' AND endTime IS NULL);";
+            // Return error or result.
+            database.query(queryOfflineSync, (err, rows) => {
+                if (err) {
+                    const errorObject = {
+                        message: 'Error at: UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE',
+                        code: 500
+                    };
+                    next(errorObject);
+                }
+
+                if (rows) {
+                    res.status(200).json({ message: 'User is clocked off.' });
+                }
+            });
+        }else{
+            const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
+            const query2 = "SELECT * FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + user.userNumber + ";";
 
             // Return error or result.
-            database.query(query2, (err, rows2)=>{
+            database.query(query, (err, rows) => {
                 if (err) {
                     const errorObject = {
                         message: "Something went wrong with the database.",
@@ -177,50 +216,59 @@ module.exports = {
                     next(errorObject);
                 }
 
-                if (rows.length > 0 && rows2.length === 0){
-                    const breaking = req.body;
+                // Return error or result.
+                database.query(query2, (err, rows2) => {
+                    if (err) {
+                        const errorObject = {
+                            message: "Something went wrong with the database.",
+                            code: 500
+                        };
+                        next(errorObject);
+                    }
 
-                    const query =
-                        "INSERT INTO `nostradamus`.`break_system` (`userNumber`, `beginTime`) VALUES ('" + breaking.userNumber + "', now());";
+                    if (rows.length > 0 && rows2.length === 0) {
 
-                    // Return error or result.
-                    database.query(query, (err, rows) =>{
-                        if (err){
-                            const errorObject = {
-                                message: "Something went wrong with the database.",
-                                code: 500
-                            };
-                            next(errorObject)
-                        }
-                        res.status(200).json({ message: 'User break clocked in.' })
-                    })
-                }
+                        const query =
+                            "INSERT INTO `nostradamus`.`break_system` (`userNumber`, `beginTime`) VALUES ('" + user.userNumber + "', now());";
 
-                else if (rows.length === 0) {
-                    res.status(500).json({ message: 'User is not clocked in yet.' })
-                }
+                        // Return error or result.
+                        database.query(query, (err, rows) => {
+                            if (err) {
+                                const errorObject = {
+                                    message: "Something went wrong with the database.",
+                                    code: 500
+                                };
+                                next(errorObject)
+                            }
+                            res.status(200).json({ message: 'User break clocked in.' })
+                        })
+                    }
 
-                else {
-                    const breaking = req.body;
+                    else if (rows.length === 0) {
+                        res.status(500).json({ message: 'User is not clocked in yet.' })
+                    }
 
-                    const query =
-                        "UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE (`userNumber` = '" + breaking.userNumber + "' AND endTime IS NULL);";
+                    else {
 
-                    // Return error or result
-                    database.query(query, (err, rows) =>{
-                        if (err){
-                            const errorObject = {
-                                message: "Something went wrong with the database.",
-                                code: 500
-                            };
-                            next(errorObject)
-                        }
+                        const query =
+                            "UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE (`userNumber` = '" + user.userNumber + "' AND endTime IS NULL);";
 
-                        res.status(200).json({ message: 'User break clocked off.' })
-                    })
-                }
+                        // Return error or result
+                        database.query(query, (err, rows) => {
+                            if (err) {
+                                const errorObject = {
+                                    message: "Something went wrong with the database.",
+                                    code: 500
+                                };
+                                next(errorObject)
+                            }
+
+                            res.status(200).json({ message: 'User break clocked off.' })
+                        })
+                    }
+                });
             });
-        });
+        }
     },
 
     // Returns breaking_system object if a row is found in database with the given userNumber and with endTime NULL
@@ -245,10 +293,12 @@ module.exports = {
 
                 let breakEntry = {
                     breakSystemId: "",
+                    userNumber: "",
                     beginTime: "",
                     endTime: ""
                 };
-				breakEntry.breakSystemId = rows[0].break_systemId;
+                breakEntry.breakSystemId = rows[0].break_systemId;
+                breakEntry.userNumber = rows[0].userNumber;
 				breakEntry.beginTime = rows[0].beginTime;
 				breakEntry.endTime = rows[0].endTime;
 
