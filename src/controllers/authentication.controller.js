@@ -34,24 +34,42 @@ module.exports = {
       assert.equal(typeof user.userNumber, "number", "A valid userNumber is required");
 
       const hash = bcrypt.hashSync(user.password, saltRounds);
+      const companyId = req.body.companyId;
 
       const query =
           "INSERT INTO `nostradamus`.`user` (`firstName`, `lastName`, `userName`, `dateOfBirth`, `emailAddress`, `password`, `accountType`, `userNumber`) " +
           "VALUES ('" + user.firstName + "', '" + user.lastName + "', '" + user.userName +"', '" + user.dateOfBirth + "', '" + user.emailAddress + "', '" + hash + "','" + user.accountType + "', '" + user.userNumber + "')";
           " LAST_INSERT_ID();";
 
+      const queryAddNewUserToCompany = `INSERT INTO nostradamus.user_company (companyId, userId)
+          VALUES (${companyId}, LAST_INSERT_ID()) WHERE userId IN
+                                    (SELECT UserId FROM nostradamus.user WHERE UserId = LAST_INSERT_ID());`;
+
           // Return error or result.
       database.query(query, (err, rows) => {
         if (err) {
           const errorObject = {
-            message: "Something went wrong with the database.",
+            message: "Error at INSERT INTO `nostradamus`.`user`.",
             code: 500
           };
           next(errorObject);
         }
 
         if (rows) {
-          res.status(200).json({ message: 'User is registered.' });
+          database.query(queryAddNewUserToCompany, (err, rows) => {
+            if (err) {
+              const errorObject = {
+                message: "Error at INSERT INTO nostradamus.user_company.",
+                code: 500
+              };
+              next(errorObject);
+            }
+
+            if (rows) {
+              res.status(200).json({ message: 'User is registered.' });
+            }
+          });
+
         }
       });
 
