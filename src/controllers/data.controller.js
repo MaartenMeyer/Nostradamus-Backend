@@ -182,12 +182,25 @@ module.exports = {
     // Getting all user information for the overview page.
     getUserOverview: (req, res, next) => {
         logger.info('getUserOverview is called');
-        const userNumber = req.params.userNumber;
+        const body = req.body;
 
-        const query = `SELECT u.userNumber, u.lastName, cs.beginTime, cs.endTime, bs.beginTime AS beginBreak, bs.endTime AS endBreak FROM nostradamus.clocking_system cs
-                            INNER JOIN nostradamus.user u ON cs.userNumber = u.userNumber
-                            INNER JOIN nostradamus.break_system bs ON cs.userNumber = bs.userNumber
-                            WHERE u.userNumber = ${userNumber};`;
+        const userNumber = body.userNumber;
+        const lastName = body.lastName;
+        const beginTime = body.beginTime;
+        const endTime = body.endTime;
+
+        let query = "";
+
+        if(userNumber != null){
+            query = `SELECT u.userNumber, u.lastName, cs.beginTime, cs.endTime FROM nostradamus.clocking_system cs
+                    INNER JOIN nostradamus.user u ON cs.userNumber = u.userNumber
+                    WHERE u.userNumber = ${userNumber};`;
+
+        }else if(lastName != null){
+
+        }else if(beginTime != null && endTime != null){
+
+        }
 
         database.query(query, (err, rows) => {
             if (err) {
