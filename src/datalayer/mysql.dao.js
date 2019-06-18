@@ -7,7 +7,8 @@ let database = mysql.createConnection({
   user:         process.env.DB_USER,
   password:     process.env.DB_PASSWORD,
   databasename: 'nostradamus',
-  insecureAuth: true
+  insecureAuth: true,
+  multipleStatements: true
 });
 
 // Connection with database.

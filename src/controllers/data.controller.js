@@ -180,16 +180,27 @@ module.exports = {
     },
 
     // Getting all user information for the overview page.
-    getUserOverview: (req, res, next) => {
+    getUserOverviewByUserNumber: (req, res, next) => {
         logger.info('getUserOverview is called');
-        const userNumber = req.params.userNumber;
+        const userNumber = req.body.userNumber;
+        const lastName = req.body.lastName;
+        const date = req.body.date;
 
-        const query = `SELECT u.userNumber, u.lastName, cs.beginTime, cs.endTime, bs.beginTime AS beginBreak, bs.endTime AS endBreak FROM nostradamus.clocking_system cs
+        const queryByUserNumber = `SELECT u.userNumber, u.lastName, cs.beginTime, cs.endTime, bs.beginTime AS beginBreak, bs.endTime AS endBreak FROM nostradamus.clocking_system cs
                             INNER JOIN nostradamus.user u ON cs.userNumber = u.userNumber
                             INNER JOIN nostradamus.break_system bs ON cs.userNumber = bs.userNumber
                             WHERE u.userNumber = ${userNumber};`;
 
-        database.query(query, (err, rows) => {
+        const queryByLastName = `SELECT u.userNumber, u.lastName, cs.beginTime, cs.endTime, bs.beginTime AS beginBreak, bs.endTime AS endBreak FROM nostradamus.clocking_system cs
+                            INNER JOIN nostradamus.user u ON cs.userNumber = u.userNumber
+                            INNER JOIN nostradamus.break_system bs ON cs.userNumber = bs.userNumber
+                            WHERE u.lastName = ${lastName};`;
+
+        const queryByDate = `SELECT u.userNumber, u.lastName, cs.beginTime, cs.endTime, FROM nostradamus.clocking_system cs
+                            INNER JOIN nostradamus.user u ON cs.userNumber = u.userNumber
+                            WHERE cs.beginTime >= ${date} AND beginTime <;`;
+
+        database.query(queryByUserNumber, (err, rows) => {
             if (err) {
                 const errorObject = {
                     message: 'Something went wrong with the database.',
