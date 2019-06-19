@@ -304,7 +304,7 @@ module.exports = {
 
                 res.status(200).json(breakEntry);
             } else {
-                res.status(404).json({ message: 'No break entries found with endTime NULL and userNumber ' + database.escape(userNumber) });
+                res.status(404).json({ message: 'No break entries found with endTime NULL and userNumber ' + userNumber });
             }
         });
     },
