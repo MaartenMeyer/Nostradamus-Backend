@@ -7,10 +7,8 @@ module.exports = {
         logger.info("clockHandler was called.");
         const user = req.body;
 
-        console.log(user)
-
         // If there is still a pause clocked in, it is now clocked out
-        const query2 = "SELECT 1 FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + user.userNumber + ";";
+        const query2 = "SELECT 1 FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + database.escape(user.userNumber) + ";";
 
         database.query(query2, (err, rows)=>{
             if (rows.length > 0){
@@ -21,9 +19,9 @@ module.exports = {
                 // If only endtime given: set endTime of break to the same endTime
                 // Else: updates break to set endTime to now()
                 if(user.beginTime != null && user.endTime != null){
-                    query = "UPDATE `nostradamus`.`break_system` SET `endTime` = '" + user.endTime + "' WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
+                    query = "UPDATE `nostradamus`.`break_system` SET `endTime` = " + database.escape(user.endTime) + " WHERE userNumber = " + database.escape(user.userNumber) + " AND endTime IS NULL;";
                 } else {
-                    query = "UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
+                    query = "UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE userNumber = " + database.escape(user.userNumber) + " AND endTime IS NULL;";
                 }
 
                 database.query(query, (err, rows)=>{
@@ -35,7 +33,7 @@ module.exports = {
         // select 1 is for faster query searching
         const clock = req.body;
 
-        const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
+        const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + database.escape(user.userNumber) + " AND endTime IS NULL;";
 
         // Return error or result.
         database.query(query, (err, rows) => {
@@ -55,9 +53,9 @@ module.exports = {
                 // If only endtime given: set endTime of clocking entry to the same endTime
                 // Else: update clocking record to set endTime to now()
                 if (user.beginTime != null && user.endTime != null) {
-                    query = "UPDATE `nostradamus`.`clocking_system` SET `endTime` = '" + user.endTime + "' WHERE (endTime IS null AND userNumber = " + clock.userNumber + ");";
+                    query = "UPDATE `nostradamus`.`clocking_system` SET `endTime` = " + database.escape(user.endTime) + " WHERE (endTime IS null AND userNumber = " + database.escape(clock.userNumber) + ");";
                 } else {
-                    query = "UPDATE `nostradamus`.`clocking_system` SET `endTime` = now() WHERE (endTime IS null AND userNumber = " + clock.userNumber + ");";
+                    query = "UPDATE `nostradamus`.`clocking_system` SET `endTime` = now() WHERE (endTime IS null AND userNumber = " + database.escape(clock.userNumber) + ");";
                 }
 
                 // Return error or result.
@@ -84,11 +82,11 @@ module.exports = {
                 // Else: insert new record with startTime set to now()
                 console.log("Synchronize clockEntry: " +user.body);
                 if (user.beginTime != null && user.endTime != null) {
-                    query = "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, endTime, branchId, departmentId) VALUES ('" + user.userNumber + "','" + user.beginTime + "','" + user.endTime +"','" + user.branchId + "','" + user.departmentId + "')";
+                    query = "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, endTime, branchId, departmentId) VALUES (" + database.escape(user.userNumber) + "," + database.escape(user.beginTime) + "," + database.escape(user.endTime) + "," + database.escape(user.branchId) + "," + database.escape(user.departmentId) + ")";
                 } else if (user.beginTime != null && user.endTime == null) {
-                    query = "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) VALUES ('" + user.userNumber + "','" + user.beginTime + "','" + user.branchId + "','" + user.departmentId + "')";
+                    query = "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) VALUES (" + database.escape(user.userNumber) + "," + database.escape(user.beginTime) + "," + database.escape(user.branchId) + "," + database.escape(user.departmentId) + ")";
                 } else {
-                    query = "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) VALUES ('" + clock.userNumber + "',now(),'" + clock.branchId + "','" + clock.departmentId + "')";
+                    query = "INSERT INTO nostradamus.clocking_system(userNumber, beginTime, branchId, departmentId) VALUES (" + database.escape(clock.userNumber) + ",now()," + database.escape(clock.branchId) + "," + database.escape(clock.departmentId) + ")";
                 }
 
                 // Return error or result
@@ -116,7 +114,7 @@ module.exports = {
         logger.info("clockStatus was called.");
         const userNumber = req.params.userNumber;
 
-        const query = "SELECT * FROM nostradamus.clocking_system WHERE userNumber = " + userNumber + " AND endTime IS NULL;";
+        const query = "SELECT * FROM nostradamus.clocking_system WHERE userNumber = " + database.escape(userNumber) + " AND endTime IS NULL;";
 
         database.query(query, (err, rows) => {
             if (err) {
@@ -160,7 +158,7 @@ module.exports = {
 
         let queryOfflineSync = "";
         if(user.beginTime != null && user.endTime == null){
-            queryOfflineSync = "INSERT INTO `nostradamus`.`break_system` (`userNumber`, `beginTime`) VALUES ('" + user.userNumber + "','" + user.beginTime + "')";
+            queryOfflineSync = "INSERT INTO `nostradamus`.`break_system` (`userNumber`, `beginTime`) VALUES (" + database.escape(user.userNumber) + "," + database.escape(user.beginTime) + ")";
             // Return error or result.
             database.query(queryOfflineSync, (err, rows) => {
                 if (err) {
@@ -173,7 +171,7 @@ module.exports = {
                 res.status(200).json({ message: 'User break clocked in.' })
             })
         }else if(user.beginTime != null && user.endTime != null){
-            queryOfflineSync = "INSERT INTO `nostradamus`.`break_system` (`userNumber`, `beginTime`, `endTime`) VALUES ('" + user.userNumber + "','" + user.beginTime + "','" + user.endTime + "')";
+            queryOfflineSync = "INSERT INTO `nostradamus`.`break_system` (`userNumber`, `beginTime`, `endTime`) VALUES (" + database.escape(user.userNumber) + "," + database.escape(user.beginTime) + "," + database.escape(user.endTime) + ")";
             // Return error or result
             database.query(queryOfflineSync, (err, rows) => {
                 if (err) {
@@ -189,7 +187,7 @@ module.exports = {
                 }
             });
         }else if(user.beginTime == null && user.endTime != null){
-            queryOfflineSync = "UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE (`userNumber` = '" + user.userNumber + "' AND endTime IS NULL);";
+            queryOfflineSync = "UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE (`userNumber` = " + database.escape(user.userNumber) + " AND endTime IS NULL);";
             // Return error or result.
             database.query(queryOfflineSync, (err, rows) => {
                 if (err) {
@@ -205,8 +203,8 @@ module.exports = {
                 }
             });
         }else{
-            const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + user.userNumber + " AND endTime IS NULL;";
-            const query2 = "SELECT * FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + user.userNumber + ";";
+            const query = "SELECT 1 FROM nostradamus.clocking_system WHERE userNumber = " + database.escape(user.userNumber) + " AND endTime IS NULL;";
+            const query2 = "SELECT * FROM nostradamus.break_system WHERE endTime IS NULL AND userNumber = " + database.escape(user.userNumber) + ";";
 
             // Return error or result.
             database.query(query, (err, rows) => {
@@ -231,7 +229,7 @@ module.exports = {
                     if (rows.length > 0 && rows2.length === 0) {
 
                         const query =
-                            "INSERT INTO `nostradamus`.`break_system` (`userNumber`, `beginTime`) VALUES ('" + user.userNumber + "', now());";
+                            "INSERT INTO `nostradamus`.`break_system` (`userNumber`, `beginTime`) VALUES (" + database.escape(user.userNumber) + ", now());";
 
                         // Return error or result.
                         database.query(query, (err, rows) => {
@@ -253,7 +251,7 @@ module.exports = {
                     else {
 
                         const query =
-                            "UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE (`userNumber` = '" + user.userNumber + "' AND endTime IS NULL);";
+                            "UPDATE `nostradamus`.`break_system` SET `endTime` = now() WHERE (`userNumber` = " + database.escape(user.userNumber) + " AND endTime IS NULL);";
 
                         // Return error or result
                         database.query(query, (err, rows) => {
@@ -280,7 +278,7 @@ module.exports = {
         logger.info("breakStatus was called.");
         const userNumber = req.params.userNumber;
 
-        const query = "SELECT * FROM nostradamus.break_system WHERE userNumber = " + userNumber + " AND endTime IS NULL;";
+        const query = "SELECT * FROM nostradamus.break_system WHERE userNumber = " + database.escape(userNumber) + " AND endTime IS NULL;";
 
         database.query(query, (err, rows) => {
             if (err) {
@@ -306,7 +304,7 @@ module.exports = {
 
                 res.status(200).json(breakEntry);
             } else {
-                res.status(404).json({ message: 'No break entries found with endTime NULL and userNumber ' + userNumber });
+                res.status(404).json({ message: 'No break entries found with endTime NULL and userNumber ' + database.escape(userNumber) });
             }
         });
     },
@@ -315,7 +313,7 @@ module.exports = {
     logger.info("hoursHandeler is called.");
     const user = req.body;
 
-    const query = "SELECT userNumber, beginTime, endTime FROM nostradamus.clocking_system where userNumber = " + user.userNumber + ";";
+      const query = "SELECT userNumber, beginTime, endTime FROM nostradamus.clocking_system where userNumber = " + database.escape(user.userNumber) + ";";
 
     // Returns error or result.
     database.query(query, (err, rows)=>{

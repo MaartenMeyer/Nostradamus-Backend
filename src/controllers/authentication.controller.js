@@ -38,9 +38,9 @@ module.exports = {
 
       const query =
           "INSERT INTO nostradamus.user (`firstName`, `lastName`, `userName`, `dateOfBirth`, `emailAddress`, `password`, `accountType`, `userNumber`) " +
-          "VALUES ('" + user.firstName + "', '" + user.lastName + "', '" + user.userName +"', '" + user.dateOfBirth + "', '" + user.emailAddress + "', '" + hash + "','" + user.accountType + "', '" + user.userNumber + "');" +
+        "VALUES (" + database.escape(user.firstName) + "," + database.escape(user.lastName) + "," + database.escape(user.userName) + "," + database.escape(user.dateOfBirth) + "," + database.escape(user.emailAddress) + ",'" + hash + "'," + database.escape(user.accountType) + "," + database.escape(user.userNumber) + ");" +
           "SET @last_userId = LAST_INSERT_ID();" +
-          "INSERT INTO nostradamus.user_company (`userId`, `companyId`) VALUES (@last_userId, " + companyId + ");";
+        "INSERT INTO nostradamus.user_company (`userId`, `companyId`) VALUES (@last_userId, " + database.escape(companyId) + ");";
 
       // Return error or result.
       database.query(query, (err, rows) => {
@@ -70,7 +70,7 @@ module.exports = {
     logger.info("loginUser is called.");
     const user = req.body;
 
-    const query = "SELECT UserId, password, accountType  FROM nostradamus.user where userName = '" + user.userName + "'";
+    const query = "SELECT UserId, password, accountType  FROM nostradamus.user where userName = " + database.escape(user.userName);
 
     // Return error or result.
     database.query(query, (err, rows) => {

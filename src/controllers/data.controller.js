@@ -17,7 +17,7 @@ module.exports = {
                                     (SELECT c.companyId FROM nostradamus.company c
                                         INNER JOIN nostradamus.user_company uc ON c.companyId = uc.companyId
                                         INNER JOIN nostradamus.user u ON uc.userId = u.UserId
-                                        WHERE u.UserId=${id}
+                                        WHERE u.UserId=${database.escape(id)}
                                     );`;
 
         database.query(query, (err, rows) => {
@@ -131,7 +131,7 @@ module.exports = {
                                     (SELECT c.companyId FROM nostradamus.company c
                                         INNER JOIN nostradamus.user_company uc ON c.companyId = uc.companyId
                                         INNER JOIN nostradamus.user u ON uc.userId = u.UserId
-                                        WHERE u.UserId=${id}
+                                        WHERE u.UserId=${database.escape(id)}
                                     );`;
 
         database.query(query, (err, rows) => {
@@ -194,17 +194,17 @@ module.exports = {
         if(userNumber != null){
             query = `SELECT u.userNumber, u.lastName, cs.beginTime, cs.endTime FROM nostradamus.clocking_system cs
                     INNER JOIN nostradamus.user u ON cs.userNumber = u.userNumber
-                    WHERE u.userNumber = ${userNumber};`;
+                    WHERE u.userNumber = ${database.escape(userNumber)};`;
 
         }else if(lastName != null){
             query = `SELECT u.userNumber, u.lastName, cs.beginTime, cs.endTime FROM nostradamus.clocking_system cs
                     INNER JOIN nostradamus.user u ON cs.userNumber = u.userNumber
-                    WHERE u.lastName = '${lastName}';`;
+                    WHERE u.lastName = ${database.escape(lastName)};`;
 
         }else if(beginDate != null && endDate != null){
             query = `SELECT u.userNumber, u.lastName, cs.beginTime, cs.endTime FROM nostradamus.clocking_system cs
                     INNER JOIN nostradamus.user u ON cs.userNumber = u.userNumber
-                    WHERE cs.beginTime >= '${beginDate}' AND cs.endTime <= '${endDate}';`;
+                    WHERE cs.beginTime >= ${database.escape(beginDate)} AND cs.endTime <= ${database.escape(endDate)};`;
         }
 
         database.query(query, (err, rows) => {
