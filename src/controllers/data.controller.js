@@ -120,26 +120,6 @@ module.exports = {
         })
     },
 
-    getAccountTypeOfUser: (req, res, next) => {
-        logger.info('getAccountTypeOfUser is called');
-        const id = req.params.userId;
-
-        const query = `SELECT u.accountType FROM nostradamus.user u WHERE u.UserId=${id};`
-
-        database.query(query, (err, rows) => {
-            if (err) {
-                const errorObject = {
-                    message: 'Error in database at: SELECT u.accountType FROM nostradamus.user u WHERE u.UserId=${id};',
-                    code: 500
-                };
-                next(errorObject);
-            }
-            if (rows) {
-                res.status(200).json(rows);
-            }
-        })
-    },
-
     getUsersOfCompany: (req, res, next) => {
         logger.info('getUsersOfCompany is called');
         const id = req.params.companyId;

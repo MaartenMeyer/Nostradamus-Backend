@@ -70,7 +70,7 @@ module.exports = {
     logger.info("loginUser is called.");
     const user = req.body;
 
-    const query = "SELECT UserId, password  FROM nostradamus.user where userName = '" + user.userName + "'";
+    const query = "SELECT UserId, password, accountType  FROM nostradamus.user where userName = '" + user.userName + "'";
 
     // Return error or result.
     database.query(query, (err, rows) => {
@@ -96,6 +96,7 @@ module.exports = {
             UserId: rows[0].UserId,
             UserName: user.userName,
           };
+          let accountType = rows[0].accountType;
 
           logger.info(payload);
 
@@ -116,7 +117,8 @@ module.exports = {
               if (token) {
                 res.status(200).json({
                   message: "Login succeeded!",
-                  token: token
+                  token: token,
+                  accountType: accountType
                 });
               }
             }
