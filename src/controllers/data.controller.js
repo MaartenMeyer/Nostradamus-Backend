@@ -5,7 +5,7 @@ const database = require("../datalayer/mysql.dao");
 module.exports = {
     // Function to get data of the company of the given user id in parsed JSON format
     getDataOfUser: (req, res, next) => {
-        logger.info('getDataOfUser is called')
+        logger.info('getDataOfUser is called');
         const id = req.params.userId;
 
         const query = `SELECT c.companyId, b.branchId, b.branchName, d.departmentId, d.departmentName FROM nostradamus.department d
@@ -18,14 +18,14 @@ module.exports = {
                                         INNER JOIN nostradamus.user_company uc ON c.companyId = uc.companyId
                                         INNER JOIN nostradamus.user u ON uc.userId = u.UserId
                                         WHERE u.UserId=${id}
-                                    );`
+                                    );`;
 
         database.query(query, (err, rows) => {
             if (err) {
                 const errorObject = {
                     message: 'Something went wrong with the database.',
                     code: 500
-                }
+                };
                 next(errorObject);
             }
             if (rows) {
@@ -113,7 +113,7 @@ module.exports = {
                     const errorObject = {
                         message: 'Error retrieving data: check if database contains departments and branches.',
                         code: 404
-                    }
+                    };
                     next(errorObject);
                 }
             }
@@ -121,7 +121,7 @@ module.exports = {
     },
 
     getUsersOfCompany: (req, res, next) => {
-        logger.info('getUsersOfCompany is called')
+        logger.info('getUsersOfCompany is called');
         const id = req.params.companyId;
 
         const query = `SELECT u.UserId, u.userNumber FROM nostradamus.user u
@@ -132,14 +132,14 @@ module.exports = {
                                         INNER JOIN nostradamus.user_company uc ON c.companyId = uc.companyId
                                         INNER JOIN nostradamus.user u ON uc.userId = u.UserId
                                         WHERE u.UserId=${id}
-                                    );`
+                                    );`;
 
         database.query(query, (err, rows) => {
             if (err) {
                 const errorObject = {
                     message: 'Something went wrong with the database.',
                     code: 500
-                }
+                };
                 next(errorObject);
             }
             if (rows) {
@@ -166,7 +166,7 @@ module.exports = {
                     const errorObject = {
                         message: 'Error retrieving data: check if database contains users.',
                         code: 404
-                    }
+                    };
                     next(errorObject);
                 }
             }
@@ -186,8 +186,8 @@ module.exports = {
 
         const userNumber = body.userNumber;
         const lastName = body.lastName;
-        const beginTime = body.beginTime;
-        const endTime = body.endTime;
+        const beginDate = body.beginDate;
+        const endDate = body.endDate;
 
         let query = "";
 
@@ -197,9 +197,14 @@ module.exports = {
                     WHERE u.userNumber = ${userNumber};`;
 
         }else if(lastName != null){
+            query = `SELECT u.userNumber, u.lastName, cs.beginTime, cs.endTime FROM nostradamus.clocking_system cs
+                    INNER JOIN nostradamus.user u ON cs.userNumber = u.userNumber
+                    WHERE u.lastName = '${lastName}';`;
 
-        }else if(beginTime != null && endTime != null){
-
+        }else if(beginDate != null && endDate != null){
+            query = `SELECT u.userNumber, u.lastName, cs.beginTime, cs.endTime FROM nostradamus.clocking_system cs
+                    INNER JOIN nostradamus.user u ON cs.userNumber = u.userNumber
+                    WHERE cs.beginTime >= '${beginDate}' AND cs.endTime <= '${endDate}';`;
         }
 
         database.query(query, (err, rows) => {
