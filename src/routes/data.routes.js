@@ -8,6 +8,7 @@ const dataController            = require("../controllers/data.controller");
 
 router.get("/data/:userId", dataController.getDataOfUser);
 router.get("/users/:companyId", dataController.getUsersOfCompany);
+router.get("/accountType/:userId", dataController.getAccountTypeOfUser);
 router.get("/status", authenticationController.validateToken, dataController.getServerStatus);
 router.post("/overview", dataController.getUserOverview);
 
