@@ -38,7 +38,7 @@ CREATE TABLE `account_type` (
 
 LOCK TABLES `account_type` WRITE;
 /*!40000 ALTER TABLE `account_type` DISABLE KEYS */;
-INSERT INTO `account_type` VALUES (1,'employee'),(2,'manager');
+INSERT INTO `account_type` VALUES (1,'admin'),(2,'manager'),(3,'employee');
 /*!40000 ALTER TABLE `account_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -63,7 +63,7 @@ CREATE TABLE `branch` (
 
 LOCK TABLES `branch` WRITE;
 /*!40000 ALTER TABLE `branch` DISABLE KEYS */;
-INSERT INTO `branch` VALUES (1,'Bergen op Zoom'),(2,'Halsteren'),(3,'Breda');
+INSERT INTO `branch` VALUES (1,'Miggelenberg'),(2,'Heideheuvel'),(3,'Heihaas'),(4,'Port Greve'),(5,'Waterparc Veluwemeer');
 /*!40000 ALTER TABLE `branch` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -93,7 +93,12 @@ CREATE TABLE `branch_department` (
 
 LOCK TABLES `branch_department` WRITE;
 /*!40000 ALTER TABLE `branch_department` DISABLE KEYS */;
-INSERT INTO `branch_department` VALUES (1,1,1),(2,1,3);
+INSERT INTO `branch_department` VALUES 
+(1,1,1),(2,1,2),(3,1,3),(4,1,4),(5,1,5),(6,1,6),(7,1,7),(8,1,8),(9,1,9),
+(10,2,1),(11,2,2),(12,2,3),(13,2,5),(14,2,7),(15,2,9),
+(16,3,1),(17,3,2),(18,3,5),(19,3,6),(20,3,8),(21,3,9),
+(22,4,1),(23,4,2),(24,4,3),(25,5,4),(26,5,8),
+(27,5,1),(28,5,2),(29,5,3),(30,5,4),(40,5,6),(41,5,8);
 /*!40000 ALTER TABLE `branch_department` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -113,7 +118,7 @@ CREATE TABLE `break_system` (
   UNIQUE KEY `break_systemId_UNIQUE` (`break_systemId`),
   KEY `break_system_user_FK_idx` (`userNumber`),
   CONSTRAINT `break_system_user_FK` FOREIGN KEY (`userNumber`) REFERENCES `user` (`userNumber`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=44 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -122,6 +127,7 @@ CREATE TABLE `break_system` (
 
 LOCK TABLES `break_system` WRITE;
 /*!40000 ALTER TABLE `break_system` DISABLE KEYS */;
+INSERT INTO `break_system` VALUES (1,1,'2019-05-26 17:52:59','2019-05-26 18:26:20');
 /*!40000 ALTER TABLE `break_system` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -133,21 +139,21 @@ DROP TABLE IF EXISTS `clocking_system`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `clocking_system` (
-  `clocingSystemId` int(11) NOT NULL AUTO_INCREMENT,
+  `clockingSystemId` int(11) NOT NULL AUTO_INCREMENT,
   `userNumber` int(11) NOT NULL,
   `beginTime` datetime NOT NULL,
   `endTime` datetime DEFAULT NULL,
   `branchId` int(11) NOT NULL,
   `departmentId` int(11) NOT NULL,
-  PRIMARY KEY (`clocingSystemId`),
-  UNIQUE KEY `clocingSystemId_UNIQUE` (`clocingSystemId`),
+  PRIMARY KEY (`clockingSystemId`),
+  UNIQUE KEY `clockingSystemId_UNIQUE` (`clockingSystemId`),
   KEY `clocking_system_userNumber_FK_idx` (`userNumber`),
   KEY `clocking_system_branch_FK_idx` (`branchId`),
   KEY `clocking_system_department_FK_idx` (`departmentId`),
   CONSTRAINT `clocking_system_branch_FK` FOREIGN KEY (`branchId`) REFERENCES `branch` (`branchId`),
   CONSTRAINT `clocking_system_department_FK` FOREIGN KEY (`departmentId`) REFERENCES `department` (`departmentId`),
   CONSTRAINT `clocking_system_user_FK` FOREIGN KEY (`userNumber`) REFERENCES `user` (`userNumber`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -156,6 +162,7 @@ CREATE TABLE `clocking_system` (
 
 LOCK TABLES `clocking_system` WRITE;
 /*!40000 ALTER TABLE `clocking_system` DISABLE KEYS */;
+INSERT INTO `clocking_system` VALUES (1,1,'2019-05-26 18:06:25','2019-05-26 18:15:57',1,1);
 /*!40000 ALTER TABLE `clocking_system` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -180,7 +187,7 @@ CREATE TABLE `company` (
 
 LOCK TABLES `company` WRITE;
 /*!40000 ALTER TABLE `company` DISABLE KEYS */;
-INSERT INTO `company` VALUES (1,'Albert Heijn'),(2,'Jumbo');
+INSERT INTO `company` VALUES (1,'Landal GreenParks');
 /*!40000 ALTER TABLE `company` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -210,7 +217,7 @@ CREATE TABLE `company_branch` (
 
 LOCK TABLES `company_branch` WRITE;
 /*!40000 ALTER TABLE `company_branch` DISABLE KEYS */;
-INSERT INTO `company_branch` VALUES (1,2,3),(2,1,2);
+INSERT INTO `company_branch` VALUES (1,1,1),(2,1,2),(3,1,3),(4,1,4),(5,1,5);
 /*!40000 ALTER TABLE `company_branch` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -235,7 +242,7 @@ CREATE TABLE `department` (
 
 LOCK TABLES `department` WRITE;
 /*!40000 ALTER TABLE `department` DISABLE KEYS */;
-INSERT INTO `department` VALUES (1,'kassa'),(2,'vakkenvullers'),(3,'bakker');
+INSERT INTO `department` VALUES (1,'Schoonmaak'),(2,'Receptie'),(3,'Restaurant'),(4,'Entertainment'),(5,'Snackbar'),(6,'Verhuur'),(7,'Hoveniersdienst'),(8,'Zwembad'),(9,'Winkel');
 /*!40000 ALTER TABLE `department` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -250,6 +257,7 @@ CREATE TABLE `user` (
   `UserId` int(11) NOT NULL AUTO_INCREMENT,
   `firstName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `lastName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `userName` varchar(50) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `dateOfBirth` date NOT NULL,
   `emailAddress` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `password` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
@@ -257,11 +265,12 @@ CREATE TABLE `user` (
   `userNumber` int(11) NOT NULL,
   PRIMARY KEY (`UserId`),
   UNIQUE KEY `UserId_UNIQUE` (`UserId`),
+  UNIQUE KEY `userName_UNIQUE` (`userName`),
   UNIQUE KEY `emailAddress_UNIQUE` (`emailAddress`),
   UNIQUE KEY `userNumber_UNIQUE` (`userNumber`),
   KEY `accountTypeId_FK_idx` (`accountType`),
   CONSTRAINT `accountTypeId_FK` FOREIGN KEY (`accountType`) REFERENCES `account_type` (`accountTypeId`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -270,7 +279,10 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'Mick','Theuns','2001-08-21','mtheuns@outlook.com','testwachtwoord123',1,1),(2,'Tim','Ooijen','2001-10-23','tim.ooijen@gmail.com','wachtwoord123',1,2);
+INSERT INTO `user` VALUES 
+(1,'Ad','Admin','admin','2019-01-01','ad@admin.com','$2a$10$9go39XbmThH9W91ohvxnZeT0k3Mz4H.6KH0W/VmtEzuKSasrA1XRG',1,1),
+(2,'Max','Manager','manager','2019-01-02','max@manager.com','$2a$10$Qmu6Bt6c0e2ZOovFmMgA5.7V0QMxdGW30KSsWQIDsfL73IPty8Pqe',2,2),
+(3,'Els','Employee','employee','2019-01-03','els@employee.com','$2a$10$3dBnen4VSSgUI6hgem29luRoNfBhcyaV91gKlvy.v2EoBnUrDkc0i',3,3);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -300,7 +312,7 @@ CREATE TABLE `user_company` (
 
 LOCK TABLES `user_company` WRITE;
 /*!40000 ALTER TABLE `user_company` DISABLE KEYS */;
-INSERT INTO `user_company` VALUES (1,1,1),(2,2,1);
+INSERT INTO `user_company` VALUES (1,1,1),(2,2,1),(3,3,1);
 /*!40000 ALTER TABLE `user_company` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -313,4 +325,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-05-21  9:39:19
+-- Dump completed on 2019-05-27 16:20:20

@@ -1,35 +1,27 @@
-const sql = require('mysql');
-const config = require('../config/appconfig');
+const mysql     = require('mysql');
+const logger    = require("tracer").colorConsole();
 
-const logger = config.logger;
-const dbconfig = config.dbconfig;
+// If online database doesn't work these are the settings for the online database.
+let database = mysql.createConnection({
+  host:         process.env.DB_HOST,
+  user:         process.env.DB_USER,
+  password:     process.env.DB_PASSWORD,
+  databasename: 'nostradamus',
+  insecureAuth: true,
+  multipleStatements: true
+});
 
-module.exports = {
-  executeQuery: (query, callback) => {
-    sql.connect(dbconfig, err => {
-      // ... error checks
-      if (err) {
-        logger.error('Error connecting: ', err.toString());
-        callback(err, null);
-        sql.close()
-      }
-      if (!err) {
-        // Query
-        new sql.Request().query(query, (err, result) => {
-          // ... error checks
-          if (err) {
-            logger.error('error', err.toString());
-            callback(err, null);
-            sql.close()
-          }
-          if (result) {
-            // logger.info(result)
-            // result.recordset.forEach(item => console.log(item.number))
-            callback(null, result);
-            sql.close()
-          }
-        })
-      }
-    })
+// Connection with database.
+database.connect( (error) => {
+  console.log('Connection pending...');
+  if (error){
+    console.log(error);
+    return error;
   }
-};
+
+  else {
+    console.log('Connected with database!')
+  }
+});
+
+module.exports = database;

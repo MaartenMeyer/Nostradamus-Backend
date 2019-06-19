@@ -1,112 +1,110 @@
-const logger = require("../config/appconfig").logger;
-const secretKey = require("../config/appconfig").secretkey;
-const jwt = require("jsonwebtoken");
-const database = require("../datalayer/mssql.dao");
-const assert = require("assert");
-const bcrypt = require("bcryptjs");
+// The used libraries from node_modules.
+const logger        = require("../config/appconfig").logger;
+const assert        = require("assert");
+
+// The connection with the classes.
+const jwt           = require("jsonwebtoken");
+const database      = require("../datalayer/mysql.dao");
+const bcrypt        = require("bcryptjs");
 
 saltRounds = 10;
 
-// Const RegExp, to validate various data entries.
-const postalCodeValidator = new RegExp("^[1-9][0-9]{3} ?(?!sa|sd|ss)[a-zA-Z]{2}$");
-const phoneValidator = new RegExp("^06(| |-)[0-9]{8}$");
-const mailValidator = new RegExp(
-  '^(([^<>()\\[\\]\\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$'
-);
-const passwordValidator = new RegExp(
-  "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{8,}$"
-);
+// Regex for extra check
+const emailValidator      = new RegExp('^(([^<>()\\[\\]\\\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$');
+const dateValidator       = new RegExp('^([12]\\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01]))$');
 
 module.exports = {
-  // Function to register new user.
   registerUser: (req, res, next) => {
-    logger.info("registerUser called");
+    logger.info("registerUser is called.");
 
-    // get user information from req.body
     const user = req.body;
-    // Validate data.
+    logger.info(user);
+
+    // Verifying the information in the request body.
     try {
-      assert.equal(typeof user.firstName, "string", "firstName is required.");
-      assert.equal(typeof user.lastName, "string", "lastName is required.");
-      assert.equal(typeof user.dateOfBirth, "string", "dateOfBirth is required.");
-      assert(mailValidator.test(user.emailAddress), "A valid mailAddress is required.");
-      assert(passwordValidator.test(user.password), "A valid password is required.");
-      assert.equal(typeof user.accountType, "integer", "A valid accountType is required.");
-      assest.equal(typeof user.userNumber, "integer", "A valid userNumber is required");
+      assert.equal(typeof user.firstName, "string", "A valid firstName is required.");
+      assert.equal(typeof user.lastName, "string", "A valid lastName is required.");
+      assert.equal(typeof user.userName, "string", "A valid userName is required.");
 
-      // Encrypt password:
-      const hash = bcrypt.hashSync(req.body.password, saltRounds);
+      assert(dateValidator.test(user.dateOfBirth), "A valid dateOfBirth is required.");
+      assert(emailValidator.test(user.emailAddress), "A valid mailAddress is required.");
 
-      // INSERT query
+      assert.equal(typeof user.accountType,  "number","A valid accountType is required.");
+      assert.equal(typeof user.password, "string", "A valid password is required");
+      assert.equal(typeof user.userNumber, "number", "A valid userNumber is required");
+
+      const hash = bcrypt.hashSync(user.password, saltRounds);
+      const companyId = req.body.companyId;
+
       const query =
-        `INSERT INTO [DBUser] (FirstName, LastName, DateOfBirth, EmailAddress, Password)` +
-        `VALUES ('${user.firstName}', '${user.lastName}', ` +
-        `'${user.dateOfBirth}','${user.emailAddress}', '${hash}')` +
-        `; SELECT SCOPE_IDENTITY() AS UserId`;
+          "INSERT INTO nostradamus.user (`firstName`, `lastName`, `userName`, `dateOfBirth`, `emailAddress`, `password`, `accountType`, `userNumber`) " +
+          "VALUES ('" + user.firstName + "', '" + user.lastName + "', '" + user.userName +"', '" + user.dateOfBirth + "', '" + user.emailAddress + "', '" + hash + "','" + user.accountType + "', '" + user.userNumber + "');" +
+          "SET @last_userId = LAST_INSERT_ID();" +
+          "INSERT INTO nostradamus.user_company (`userId`, `companyId`) VALUES (@last_userId, " + companyId + ");";
 
-      // Execute query and return rows.
-      database.executeQuery(query, (err, rows) => {
-        // process error or result
+      // Return error or result.
+      database.query(query, (err, rows) => {
         if (err) {
+          console.log(err);
           const errorObject = {
-            message: "Something went wrong with the database.",
+            message: "Error at INSERT INTO `nostradamus`.`user`.",
             code: 500
           };
           next(errorObject);
         }
         if (rows) {
-          res.status(200).json({ result: rows.recordset });
+          res.status(200).json({ message: 'User is registered.' });
         }
       });
 
-    } catch (ex) {
+    } catch (e) {
       const errorObject = {
-        message: "Validation fails: " + ex.toString(),
+        message: "Validation fails: " + e.toString(),
         code: 500
       };
       return next(errorObject);
     }
   },
 
-  // Function to login user.
   loginUser: (req, res, next) => {
-    logger.info("loginUser called");
-
-    // get user information from req.body
+    logger.info("loginUser is called.");
     const user = req.body;
 
-    // SELECT query
-    const query = `SELECT Password, UserId FROM [DBUser] WHERE EmailAddress='${
-      user.emailAddress
-      }'`;
-    // execute query and return rows
-    database.executeQuery(query, (err, rows) => {
-      // process error or result
+    const query = "SELECT UserId, password  FROM nostradamus.user where userName = '" + user.userName + "'";
+
+    // Return error or result.
+    database.query(query, (err, rows) => {
       if (err) {
+        logger.warn(err);
         const errorObject = {
           message: "Something went wrong with the database.",
           code: 500
         };
         next(errorObject);
       }
-      if (rows) {
-        logger.info(rows.recordset);
-        if (
-          rows.recordset.length === 1 &&
-          bcrypt.compareSync(req.body.password, rows.recordset[0].Password)
-        ) {
-          logger.info("Password match, user logged id");
-          logger.trace(rows.recordset);
 
-          // Create payload for token
+      if (rows) {
+
+        if (
+            rows.length === 1 && bcrypt.compareSync(req.body.password, rows[0].password)
+        ) {
+
+          logger.info(rows);
+          logger.info("Password match, user logged id.");
+
           const payload = {
-            UserId: rows.recordset[0].UserId
+            UserId: rows[0].UserId,
+            UserName: user.userName,
           };
+
+          logger.info(payload);
+
           jwt.sign(
             { data: payload },
-            secretKey,
-            { expiresIn: 60 * 60 },
+            'secretKey',
+            { expiresIn: 60 * 60 * 24 },
             (err, token) => {
+
               if (err) {
                 const errorObject = {
                   message: "Could not generate JWT.",
@@ -114,19 +112,21 @@ module.exports = {
                 };
                 next(errorObject);
               }
+
               if (token) {
                 res.status(200).json({
-                  result: {
-                    token: token
-                  }
+                  message: "Login succeeded!",
+                  token: token
                 });
               }
             }
           );
-        } else {
+        }
+
+        else {
           const errorObject = {
             message:
-              "No Access: email does not exist or password is wrong!",
+              "No Access: userName does not exist or password is wrong!",
             code: 401
           };
           next(errorObject);
@@ -135,66 +135,44 @@ module.exports = {
     });
   },
 
-  // Function to make new validation token.
   validateToken: (req, res, next) => {
-    logger.info("validateToken called");
-    // logger.debug(req.headers)
+    logger.info("validateToken is called.");
     const authHeader = req.headers.authorization;
+    const token = authHeader.substring(7, authHeader.length);
+
     if (!authHeader) {
       errorObject = {
         message: "No Authorization!",
         code: 401
       };
+
       logger.warn("Validate token failed: ", errorObject.message);
       return next(errorObject);
     }
-    const token = authHeader.substring(7, authHeader.length);
 
-    jwt.verify(token, secretKey, (err, payload) => {
+    jwt.verify(token, 'secretKey', (err, payload) => {
       if (err) {
         errorObject = {
           message: "not authorized!",
           code: 401
         };
-        logger.warn("Validate token failed: ", errorObject.message);
         next(errorObject);
       }
+
       logger.trace("payload", payload);
-      if (payload.data && payload.data.UserId) {
-        logger.debug("token is valid", payload);
-        // User has access. Add UserId from payload to
-        // request for every endpoint.
+
+      if (payload.data && payload.data.UserId && payload.data.UserName) {
         req.userId = payload.data.UserId;
+        req.userName = payload.data.UserName;
         next();
-      } else {
+      }
+
+      else {
         errorObject = {
           message: "UserId is missing!",
           code: 401
         };
-        logger.warn("Validate token failed: ", errorObject.message);
         next(errorObject);
-      }
-    });
-  },
-
-  // Function to get all users.
-  getAll: (req, res, next) => {
-    logger.info("getAll called");
-
-    // make query
-    const query = `SELECT * FROM [DBUser]`;
-
-    // execute query
-    database.executeQuery(query, (err, rows) => {
-      if (err) {
-        const errorObject = {
-          message: "Something went wrong in the database.",
-          code: 500
-        };
-        next(errorObject);
-      }
-      if (rows) {
-        res.status(200).json({ result: rows.recordset });
       }
     });
   }
